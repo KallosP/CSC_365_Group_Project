@@ -19,12 +19,12 @@ If the user attempts to access a task that doesn't exist, the API returns a "Tas
 If the user's application tries to create a task that already exists, the API returns a "Task Already Exists" error and tells the user to instead create a new one.
 ## 3. Unauthorized Access
 If an unauthorized user tries to create, modify, or delete a task, the API returns an "Unauthorized Access" error.
-4. 
-5. 
-6. 
-7. 
-8. 
-9. 
-10. 
-11. 
-12. 
+## 4.
+## 5. 
+## 6. 
+## 7. 
+## 8. 
+## 9. 
+## 10. 
+## 11. 
+## 12. 
