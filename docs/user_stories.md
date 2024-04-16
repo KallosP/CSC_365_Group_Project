@@ -8,9 +8,9 @@
 7. As a project manager, I want to create tasks in the system, so that team members can view and complete them.
 8. As a team member, I want to update the status of tasks, so that the project manager can track progress.
 9. As a QA tester, I want to mark tasks as completed or needing rework, so that quality standards are maintained.
-10. 
-11. 
-12. 
+10. As a data analyst, I want to be able to retrieve all task and execution times so I can use the data
+11. As a developer, I want to implement task dependencies, so that certain tasks can be triggered or prioritized based on the status of other tasks.
+12. As a support agent, I want to be able to link tasks to exceptions so that a user can have context on why an exception was caused.
 
 # Exceptions
 ## 1. Task Doesn't Exist
@@ -31,6 +31,9 @@ If the API fails to connect to the database, it should log the error and notify 
 If a task cannot be created due to a system error, the user should receive a notification to try again or contact support if the issue persists.
 ## 9. Task Update Failure
 If updates to a task fail, users should be prompted to check their network connection or input values and try again.
-## 10. 
-## 11. 
-## 12. 
+## 10. Task Deleting Failure
+If a task cannot be deleted due to a system error, the user should recieve a notification to try again or contact support if the issue persists.
+## 11. Invalid Transition
+If the transition of the state of a task happens in an invalid order notify the user that it is an invalid transition.
+## 12. Dependency Error
+If there is an invalid dependency ie. a circular dependency notify the user and suggest a fix for the dependency issue.
