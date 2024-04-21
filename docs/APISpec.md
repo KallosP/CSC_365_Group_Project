@@ -3,7 +3,7 @@
  
  ### TODO: 
 #### Implement these attributes in some of the endpoints:
-- "status": "string"  ("inactive", "active", or "suspended") -> can probably have a POST/GET, one for setting the status and one for getting status
+- "status": "string"  ("disabled", "active", or "suspended") -> can probably have a POST/GET, one for setting the status and one for getting status
 - "tags": ["string"] -> can be used in a filter endpoint
 - "creation_time": "string" (Format: YYYY-MM-DD HH:MM:SS) -> GET request
   
@@ -35,7 +35,7 @@ Return a summary of total tasks created and number of each status type.
 {
   "number_of_tasks": "number",
   "active_tasks": "number",
-  "inactive_tasks": "number",
+  "disabled_tasks": "number",
   "suspended_tasks": "number"
 }
 ```  
