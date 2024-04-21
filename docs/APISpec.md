@@ -1,11 +1,11 @@
 # API Specification for Task Manager
 
  
-TODO: 
-Implement these attributes in some of the endpoints:
-    - "status": "string"  ("inactive", "active", or "suspended") -> can probably have a POST/GET, one for setting the status and one for getting status 
-    - "tags": ["string"] -> can be used in a filter endpoint   
-    - "creation_time": "string" (Format: YYYY-MM-DD HH:MM:SS) -> GET request
+ ### TODO: 
+#### Implement these attributes in some of the endpoints:
+- "status": "string"  ("inactive", "active", or "suspended") -> can probably have a POST/GET, one for setting the status and one for getting status
+- "tags": ["string"] -> can be used in a filter endpoint
+- "creation_time": "string" (Format: YYYY-MM-DD HH:MM:SS) -> GET request
 
 ## 1. Task Creation
 
