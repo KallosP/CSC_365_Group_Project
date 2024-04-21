@@ -7,7 +7,7 @@
 - "tags": ["string"] -> can be used in a filter endpoint
 - "creation_time": "string" (Format: YYYY-MM-DD HH:MM:SS) -> GET request
   
-NOTE: the idea is for the API to be similar to Windows Task Manager
+### NOTE: the idea is for the API to be similar to Windows Task Manager
 
 ## 1. Task Creation
 
