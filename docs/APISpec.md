@@ -3,7 +3,6 @@
  
  ### TODO: 
 #### Implement these attributes in some of the endpoints:
-- "status": "string"  ("suspended", "active") -> can probably have a POST/GET, one for setting the status and one for getting status
 - "tags": ["string"] -> can be used in a filter endpoint
 - "creation_time": "string" (Format: YYYY-MM-DD HH:MM:SS) -> GET request
   
