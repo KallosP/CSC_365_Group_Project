@@ -42,6 +42,8 @@ Return a summary of total tasks created and number of each status type.
 
 ### 2.2. Get Task Info - `/summary/{task_id}` (GET)
 
+Return information about an existing task, it's name, state, and resource utilization.
+
 **Response**:
 ```json
 {
