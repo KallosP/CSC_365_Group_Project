@@ -3,7 +3,7 @@
  
  ### TODO: 
 #### Implement these attributes in some of the endpoints:
-- "status": "string"  ("disabled", "active", or "suspended") -> can probably have a POST/GET, one for setting the status and one for getting status
+- "status": "string"  ("suspended", "active") -> can probably have a POST/GET, one for setting the status and one for getting status
 - "tags": ["string"] -> can be used in a filter endpoint
 - "creation_time": "string" (Format: YYYY-MM-DD HH:MM:SS) -> GET request
   
@@ -16,9 +16,9 @@
 Create a new task.
 
 **Response**:
-
 ```json
 {
+    "task_id": "string",
     "name": "string",
     "description": "string",
     "priority": "string", /* "high", "medium", or "low" */
@@ -26,7 +26,7 @@ Create a new task.
 ```
 ## 2. Task Summary
 
-### 2.1. Get Task Summary - `/summary` (GET)
+### 2.1. Get Tasks Summary - `/summary` (GET)
 
 Return a summary of total tasks created and number of each status type.
 
@@ -38,9 +38,69 @@ Return a summary of total tasks created and number of each status type.
   "disabled_tasks": "number",
   "suspended_tasks": "number"
 }
-```  
-## 3.
-## 4.
+```
+
+### 2.2. Get Task Info - `/summary/{task_id}` (GET)
+
+**Response**:
+```json
+{
+  "name": "string",
+  "status": "string",
+  "cpu_usage": "number",
+  "memory_usage": "number"
+}
+```
+
+## 3. Task Modification
+
+### 3.1. End Task - `/remove/{task_id}` (POST)
+
+Stops and removes a task from task manager table.
+
+**Response**:
+```json
+{
+  "success": "boolean"
+}
+```
+
+### 3.2. Suspend Task - `/suspend/{task_id}` (POST)
+
+Suspends a running task temporarily and frees resources.
+
+**Response**:
+```json
+{
+  "success": "boolean"
+}
+```
+
+### 3.3. Enable Task - `/enable/{task_id}` (POST)
+
+Starts a suspended task and reallocates resources.
+
+**Response**:
+```json
+{
+  "success": "boolean"
+}
+```
+
+## 4. Utilization
+
+### 4.1. Get Usage - `/utilization` (GET)
+
+Get CPU and memory percent usage.
+
+**Response**:
+```json
+{
+  "cpu_usage": "number",
+  "memory_usage": "number"
+}
+```
+
 ## 5.
 ## 6.
 ## 7.
