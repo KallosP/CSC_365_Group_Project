@@ -152,11 +152,11 @@ Removes tags from a task
 }
 ```
 
-## 6. Filter Tasks
+## 6. Sort Tasks
 
-### 6.1 Filter Tasks by Tag - `filter` (POST)
+### 6.1 Sort Tasks by Tag - `sort/tags` (POST)
 
-Displays all tasks with given tags
+Displays all tasks with given tags first
 
 **Request**:
 ```json
@@ -177,6 +177,21 @@ Displays all tasks with given tags
  }
 ] 
 ```
+
+### 6.2 Sort Tasks by field - `sort/{field}` (POST)
+ **Response**:
+```json
+[
+ {
+  "name": "string",
+  "status": "string",
+  "cpu_usage": "number",
+  "memory_usage": "number"
+  "tags": ["string", "string", ...]
+ }
+] 
+```
+
 
 
 ## 7.
