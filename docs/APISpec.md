@@ -102,7 +102,82 @@ Get CPU and memory percent usage.
 }
 ```
 
-## 5.
-## 6.
+## 5. Tag Modification
+
+### 5.1 Gets Tags - `/tags/{task_id}` (GET)
+
+Return a list of all tags associated with the task.
+
+**Response**:
+```json
+{
+  "tags": ["string", "string", ...]
+}
+```
+
+### 5.2 Adding Tags - `tags/{task_id}/add` (POST)
+
+**Request**:
+```json
+{
+  "tags": ["string", "string", ...]
+}
+```
+
+Adds tags to a task.
+
+
+**Response**:
+```json
+{
+  "success": "boolean"
+}
+```
+
+### 5.3 Removing Tags - `tags/{task_id}/remove` (POST)
+
+Removes tags from a task
+
+**Request**:
+```json
+{
+  "tags": ["string", "string", ...]
+}
+```
+
+**Response**:
+```json
+{
+  "success": "boolean"
+}
+```
+
+## 6. Filter Tasks
+
+### 6.1 Filter Tasks by Tag - `filter` (POST)
+
+Displays all tasks with given tags
+
+**Request**:
+```json
+{
+  "tags": ["string", "string", ...]
+}
+```
+
+ **Response**:
+```json
+[
+ {
+  "name": "string",
+  "status": "string",
+  "cpu_usage": "number",
+  "memory_usage": "number"
+  "tags": ["string", "string", ...]
+ }
+] 
+```
+
+
 ## 7.
 ## 8.
