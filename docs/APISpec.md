@@ -183,8 +183,3 @@ Displays all tasks with given tags first
  }
 ] 
 ```
-
-
-
-## 7.
-## 8.
