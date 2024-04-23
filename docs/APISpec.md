@@ -1,13 +1,5 @@
 # API Specification for Task Manager
 
- 
- ### TODO: 
-#### Implement these attributes in some of the endpoints:
-- "tags": ["string"] -> can be used in a filter endpoint
-- "creation_time": "string" (Format: YYYY-MM-DD HH:MM:SS) -> GET request
-  
-### NOTE: the idea is for the API to be similar to Windows Task Manager
-
 ## 1. Task Creation
 
 ### 1.1. New Task - `/create` (POST)
