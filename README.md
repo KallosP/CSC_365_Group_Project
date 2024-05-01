@@ -5,4 +5,4 @@
 - Sean Wagoner: sewagone@calpoly.edu
 - Payton Anderson: poanders@calpoly.edu
 ## Description
-We're planning on implementing a general Task Manager API that can connect an arbitrary application with its database. The overall purpose is to facilitate the management of various different tasks an application might need to get done. These tasks are ideally stored in an organized manner within its database. Our API will act as the connection between the application and its database, offering tools to help simplify the modification of the tasks.
+We're planning on implementing a general Task Manager API. The overall purpose is to facilitate the management of various different tasks a user enters into our database via our API. Storing these tasks along with the user's information in our database allows for the tracking of tasks that are specific to that user. Our API will act as a helper for task management, offering several tools/features to help simplify the modification/viewing of tasks.
