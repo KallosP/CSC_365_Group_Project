@@ -1,16 +1,16 @@
 # User Stories
-1. As an application debugger, I need an API that tracks my application's various tasks by date, so I know when certain tasks were executed before others.
-2. As a game developer, I want to order my application's tasks by level of importance, so I can efficiently allocate my computer's resources and optimize performance.
+1. As an application debugger, I need an API that I can use that tracks the various bugs I need to fix, so I can stay organized when debugging.
+2. As a dog trainer, I want to store the jobs that were assigned to me, so I can remember what I need to get done.
 3. As a developer, I want to categorize tasks based on tags, so I can filter them by their types.
-4. As an embedded developer, I want to view CPU and memory usage, so I can decide which hardware to use and which tasks to run.
-5. As a parallel programmer, I want to see which threads are running in each program, so I can optimize my code.
-6. As someone with a slow computer, I want to see the state of programs, to know if a suspended program should be stopped.
-7. As a project manager, I want to create tasks in the system, so that team members can view and complete them.
+4. As a project manager, I want to create a set of tasks with deadlines for employees, so they know when they should get their tasks done.
+5. As a project evaluator, I want to see how long it took certain employees to complete their tasks, so I can gather efficiency data.
+6. 
+7. 
 8. As a team member, I want to update the status of tasks, so that the project manager can track progress.
 9. As a QA tester, I want to mark tasks as completed or needing rework, so that quality standards are maintained.
-10. As a data analyst, I want to be able to retrieve all task and execution times so I can use the data
-11. As a developer, I want to implement task dependencies, so that certain tasks can be triggered or prioritized based on the status of other tasks.
-12. As a support agent, I want to be able to link tasks to exceptions so that a user can have context on why an exception was caused.
+10. As a data analyst, I want to be able to see all task completion times, so I can use the data.
+11. 
+12. 
 
 # Exceptions
 ## 1. Task Doesn't Exist
