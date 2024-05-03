@@ -4,13 +4,13 @@
 3. As a developer, I want to categorize tasks based on tags, so I can filter them by their types.
 4. As a project manager, I want to create a set of tasks with deadlines for employees, so they know when they should get their tasks done.
 5. As a project evaluator, I want to see how long it took certain employees to complete their tasks, so I can gather efficiency data.
-6. 
-7. 
+6. As a freelancer, I want to keep track of the time spent on each task, so I can bill my clients accurately.
+7. As a product owner, I want to prioritize tasks based on their importance and urgency, so I can ensure that critical tasks are completed first.
 8. As a team member, I want to update the status of tasks, so that the project manager can track progress.
 9. As a QA tester, I want to mark tasks as completed or needing rework, so that quality standards are maintained.
 10. As a data analyst, I want to be able to see all task completion times, so I can use the data.
-11. 
-12. 
+11. As a remote worker, I want to add notes and comments to tasks, so I can share updates and clarifications with my team.
+12. As a team lead, I want to assign tasks to my team members, so I can distribute the workload evenly.
 
 # Exceptions
 ## 1. Task Doesn't Exist
@@ -33,7 +33,7 @@ If a task cannot be created due to a system error, the user should receive a not
 If updates to a task fail, users should be prompted to check their network connection or input values and try again.
 ## 10. Task Deleting Failure
 If a task cannot be deleted due to a system error, the user should recieve a notification to try again or contact support if the issue persists.
-## 11. Invalid Transition
-If the transition of the state of a task happens in an invalid order notify the user that it is an invalid transition.
-## 12. Dependency Error
-If there is an invalid dependency ie. a circular dependency notify the user and suggest a fix for the dependency issue.
+## 11. Tag Duplicate Error
+If a user attempts to add a tag to a task that already has that tag, the API returns a duplication error, notifying the user the tag is already applied on that task.
+## 12. Task Insert Into Group Error
+If a task cannot be inserted into a group, an error is returned notifying the user the exact reason why the task could not be added.
