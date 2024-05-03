@@ -1,23 +1,14 @@
 # Example Flows
 ## 1. Project Manager Creating a Task
-Alice, the system administrator, is monitoring her system’s tasks. She notices a new task that needs to be added for a system update. The task is of high priority. She calls POST /create passing "System Update" as the name, a small description, and "high" as the priority. This new task now has an ID of 5001 and has been saved. 
+Alice is the project manager for a retail website. She wants to create a high priority task for advertising a new potion product. She calls POST /crud/create with "Adverstise Potion" as the name, fills out a short description, sets the priority to "high", and sets the status to "in progress". The task gets created and the ID is set to 5001.
 
-Later, Alice wants to check the summary of all her tasks after adding "System Update" to ensure that the number of processes that should be running is normal. She calls GET /summary and can see there are:
+Later, Alice wants to check the status of all tasks associated with the website. She calls GET /summary and can see there are:
 - 312 total tasks
-- 65 active tasks
-- 242 disabled tasks
-- 5 suspended tasks
+- 65 completed tasks
+- 242 in progress tasks
+- 5 not started tasks
   
-## 2. Monitoring Hardware Utilization
-Bobby is using the task manager to view resource usage while working on a large program. After executing his program by calling POST /create, he wants to see the computer's utilization due to both his program and the rest of the programs running on his computer. 
+## 2. Employee Sorting and Completing a Task
+Bob, an employee of Alice, wants to view his tasks by order of due date to see which tasks he should work on first. He calls POST sort/due_date which returns a list of tasks ordered by the timestamp they are due. He sees a task due today with ID 5001 and finishes working on it. He then calls PATCH /crud/update/5001 and sets the status to "complete".
 
-To do this, he uses his task's ID given in the response of /create to call /summary/{task_id} which tells him his task is using 10% of his CPU usage and 50% of his memory usage. He then compares this to the total usage by calling /utilization and sees his computer is using 23% of his CPU and 70% of his memory. He uses this information to fix a memory leak in his program.
-
-## 3. Sorting tasks 
-Carol wants to use the task manager to see which tasks are using the most memory and CPU. First she could call GET /summary/{task_id} if she doesn't already know the task fields.
-
-Now that she knows the fields she can look at tasks that are sorted by the fields now.
-First, to look at Memory she can call POST /sort/memory_usage. 
-Second, to look at CPU she would call POST /sort/cpu_usage
-
-Carol now knows which tasks are using the most CPU and Memory now.
+## 3. 
