@@ -203,7 +203,7 @@ Displays all tasks with given tags first
     "tags": ["string", "string", ...]
     },
     {
-    ...
+        ...
     }
 ] 
 ```
