@@ -1,4 +1,4 @@
-# CSC_365_Group_Project
+# Task Manager API (CSC 365 Group Project)
 ## Contributors
 - Peter Kallos: pkallos@calpoly.edu
 - Matthew Province: mtprovin@calpoly.edu
