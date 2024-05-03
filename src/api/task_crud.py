@@ -9,7 +9,7 @@ router = APIRouter(
     dependencies=[Depends(auth.get_api_key)],
 )
 
-@router.post("/plan")
+@router.post("/create")
 def create_task():
     # TODO: Insert a task 
     #with db.engine.begin() as connection:
