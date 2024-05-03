@@ -104,84 +104,21 @@ Delete an existing task.
 
 ### 2.1. Get Tasks Summary - `/summary` (GET)
 
-Return a summary of total tasks created and number of each status type.
+Return a summary of all tasks that have been created.
 
 **Response**:
 ```json
 {
   "number_of_tasks": "number",
-  "active_tasks": "number",
-  "disabled_tasks": "number",
-  "suspended_tasks": "number"
+  "tasks_completed": "number",
+  "tasks_in_progress": "number",
+  "tasks_not_started": "number"
 }
 ```
 
-### 2.2. Get Task Info - `/summary/{task_id}` (GET)
+## 3. Tag Modification
 
-Return information about an existing task, it's name, state, and resource utilization.
-
-**Response**:
-```json
-{
-  "name": "string",
-  "status": "string",
-  "cpu_usage": "number",
-  "memory_usage": "number"
-}
-```
-
-## 3. Task Modification
-
-### 3.1. End Task - `/remove/{task_id}` (POST)
-
-Stops and removes a task from task manager table.
-
-**Response**:
-```json
-{
-  "success": "boolean"
-}
-```
-
-### 3.2. Suspend Task - `/suspend/{task_id}` (POST)
-
-Suspends a running task temporarily and frees resources.
-
-**Response**:
-```json
-{
-  "success": "boolean"
-}
-```
-
-### 3.3. Enable Task - `/enable/{task_id}` (POST)
-
-Starts a suspended task and reallocates resources.
-
-**Response**:
-```json
-{
-  "success": "boolean"
-}
-```
-
-## 4. Utilization
-
-### 4.1. Get Usage - `/utilization` (GET)
-
-Get CPU and memory percent usage.
-
-**Response**:
-```json
-{
-  "cpu_usage": "number",
-  "memory_usage": "number"
-}
-```
-
-## 5. Tag Modification
-
-### 5.1 Gets Tags - `/tags/{task_id}` (GET)
+### 3.1 Gets Tags - `/tags/{task_id}` (GET)
 
 Return a list of all tags associated with the task.
 
@@ -192,7 +129,7 @@ Return a list of all tags associated with the task.
 }
 ```
 
-### 5.2 Adding Tags - `tags/{task_id}/add` (POST)
+### 3.2 Adding Tags - `tags/{task_id}/add` (POST)
 
 **Request**:
 ```json
@@ -211,7 +148,7 @@ Adds tags to a task.
 }
 ```
 
-### 5.3 Removing Tags - `tags/{task_id}/remove` (POST)
+### 3.3 Removing Tags - `tags/{task_id}/remove` (POST)
 
 Removes tags from a task
 
@@ -229,9 +166,9 @@ Removes tags from a task
 }
 ```
 
-## 6. Sort Tasks
+## 4. Sort Tasks
 
-### 6.1 Sort Tasks by Tag - `sort/tags` (POST)
+### 4.1 Sort Tasks by Tag - `sort/tags` (POST)
 
 Displays all tasks with given tags first
 
@@ -242,29 +179,31 @@ Displays all tasks with given tags first
 }
 ```
 
- **Response**:
+**Response**:
 ```json
 [
- {
-  "name": "string",
-  "status": "string",
-  "cpu_usage": "number",
-  "memory_usage": "number"
-  "tags": ["string", "string", ...]
- }
+    {
+      "name": "string",
+      "status": "string",
+      "tags": ["string", "string", ...]
+    },
+    {
+        ...
+    }
 ] 
 ```
 
-### 6.2 Sort Tasks by field - `sort/{field}` (POST)
+### 4.2 Sort Tasks by Field - `sort/{field}` (POST)
  **Response**:
 ```json
 [
- {
-  "name": "string",
-  "status": "string",
-  "cpu_usage": "number",
-  "memory_usage": "number"
-  "tags": ["string", "string", ...]
- }
+    {
+    "name": "string",
+    "status": "string",
+    "tags": ["string", "string", ...]
+    },
+    {
+    ...
+    }
 ] 
 ```
