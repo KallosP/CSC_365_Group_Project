@@ -51,7 +51,7 @@ Gets the informaiton associated with an existing task.
 }
 ```
 
-### 1.3. Update Task - `/crud/update/{task_id}` ()
+### 1.3. Update Task - `/crud/update/{task_id}` (PATCH)
 
 Update an existing task.
 
