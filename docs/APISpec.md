@@ -18,6 +18,7 @@ Create a new task.
     "due_date": "timestamp", /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
     "end_date": "timestamp" /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
 }
+```
 
 **Response**:
 ```json
