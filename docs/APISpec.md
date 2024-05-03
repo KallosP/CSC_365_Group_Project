@@ -6,15 +6,26 @@
 
 Create a new task.
 
-**Response**:
+**Request**:
 ```json
 {
-    "task_id": "string",
+    "task_id": "int",
     "name": "string",
     "description": "string",
     "priority": "string", /* "high", "medium", or "low" */
+    "status": "string", /* "complete", "not started", "in progress" */
+    "start_date": "timestamp", /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+    "due_date": "timestamp", /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+    "end_date": "timestamp" /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+}
+
+**Response**:
+```json
+{
+    "success": "boolean"
 }
 ```
+
 ## 2. Task Summary
 
 ### 2.1. Get Tasks Summary - `/summary` (GET)
