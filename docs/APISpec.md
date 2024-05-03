@@ -1,8 +1,8 @@
 # API Specification for Task Manager
 
-## 1. Task Creation
+## 1. Task CRUD
 
-### 1.1. New Task - `/create` (POST)
+### 1.1. New Task - `/crud/create` (POST)
 
 Create a new task.
 
@@ -17,6 +17,79 @@ Create a new task.
     "start_date": "timestamp", /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
     "due_date": "timestamp", /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
     "end_date": "timestamp" /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+}
+```
+
+**Response**:
+```json
+{
+    "success": "boolean"
+}
+```
+
+### 1.2. Read Task - `/crud/read/{task_id}` (GET)
+
+Gets the informaiton associated with an existing task.
+
+**Request**:
+```json
+{
+    "task_id": "int"
+}
+```
+
+**Response**:
+```json
+{
+    "name": "string",
+    "description": "string",
+    "priority": "string", /* "high", "medium", or "low" */
+    "status": "string", /* "complete", "not started", "in progress" */
+    "start_date": "timestamp", /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+    "due_date": "timestamp", /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+    "end_date": "timestamp" /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+}
+```
+
+### 1.3. Update Task - `/crud/update/{task_id}` ()
+
+Update an existing task.
+
+**Request**:
+```json
+{
+    "task_id": "int",
+    "name": "string", /* optional */
+    "description": "string", /* optional */
+    "priority": "string", /* optional, "high", "medium", or "low" */
+    "status": "string", /* optional, "complete", "not started", "in progress" */
+    "start_date": "timestamp", /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+    "due_date": "timestamp", /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+    "end_date": "timestamp" /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+}
+```
+
+**Response**:
+```json
+{
+    "name": "string",
+    "description": "string",
+    "priority": "string", /* "high", "medium", or "low" */
+    "status": "string", /* "complete", "not started", "in progress" */
+    "start_date": "timestamp", /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+    "due_date": "timestamp", /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+    "end_date": "timestamp" /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+}
+```
+
+### 1.4. Delete Task - `/crud/delete/{task_id}` (DELETE)
+
+Delete an existing task.
+
+**Request**:
+```json
+{
+    "task_id": "int"
 }
 ```
 
