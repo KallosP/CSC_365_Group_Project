@@ -168,7 +168,7 @@ Removes tags from a task
 
 ## 4. Sort Tasks
 
-### 4.1 Sort Tasks by Tag - `sort/tags` (POST)
+### 4.1 Sort Tasks by Tag - `sort/tags` (GET)
 
 Displays all tasks with given tags first
 
@@ -193,7 +193,7 @@ Displays all tasks with given tags first
 ] 
 ```
 
-### 4.2 Sort Tasks by Field - `sort/{field}` (POST)
+### 4.2 Sort Tasks by Field - `sort/{field}` (GET)
  **Response**:
 ```json
 [
