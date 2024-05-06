@@ -17,14 +17,23 @@ class Task(BaseModel):
     description: str
     priority: str
     status: str
-    start_date: datetime.isoformat
-    due_date: datetime.isoformat
-    end_date: datetime.isoformat
+    start_date: datetime
+    due_date: datetime
+    end_date: datetime
 
 @router.post("/create")
 def create_task(task: Task):
-    # TODO: Insert a task 
-    # TODO: generate unique id 
+
+    # TODO: need to make a user account creation and have their unique ID tied to all the tasks they create
+
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text(""))
+        connection.execute(sqlalchemy.text(
+            """
+            INSERT INTO tasks (name, description, priority, status, start_date, due_date, end_date)
+            VALUES
+            (:name, :description, :priority, :status, :start_date, :due_date, :end_date)
+            """
+            ), [{"name": task.name, "description": task.description, "priority": task.priority,
+                "status": task.status, "start_date": task.start_date, "due_date": task.due_date,
+                "end_date": task.end_date}])
     return "OK"
