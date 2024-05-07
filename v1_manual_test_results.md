@@ -3,7 +3,7 @@ Alice is a new project manager for a retail website. Naturally, she wants to kee
 
 # Testing results
 <Repeated for each step of the workflow>
-1. Account Creation:
+## 1. Account Creation:
 curl -X 'POST' \
   'http://task-manager-api-vitd.onrender.com/user/create' \
   -H 'accept: application/json' \
@@ -13,12 +13,12 @@ curl -X 'POST' \
   "user_name": "Alice",
   "password": "password123"
 }'
-2. Response:
+## 2. Response:
 {
   "user_id": 2
 }
   
-3. Task 1:
+## 3. Task 1:
 curl -X 'POST' \
   'http://task-manager-api-vitd.onrender.com/crud/create' \
   -H 'accept: application/json' \
