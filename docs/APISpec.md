@@ -207,3 +207,34 @@ Displays all tasks with given tags first
     }
 ] 
 ```
+
+## 5. User Account
+### 5.1 Account Creation - `user/create` (POST)
+**Request**:
+```json
+{
+  "user_name": "string",
+  "password": "string"
+}
+```
+**Response**:
+```json
+{
+  "user_id": "int"
+}
+```
+### 5.2 Login - `user/login` (POST)
+**Request**:
+```json
+{
+  "user_name": "string",
+  "password": "string"
+}
+```
+**Response**:
+```json
+{
+  "user_id": "int"
+}
+```
+
