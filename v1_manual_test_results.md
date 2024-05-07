@@ -13,7 +13,6 @@ curl -X 'POST' \
   "user_name": "Alice",
   "password": "password123"
 }'
-
 2. Response:
 {
   "user_id": 2
