@@ -5,7 +5,7 @@ Alice is a new project manager for a retail website. Naturally, she wants to kee
 <Repeated for each step of the workflow>
 1. Account Creation:
 curl -X 'POST' \
-  'http://127.0.0.1:3000/user/create' \
+  'http://task-manager-api-vitd.onrender.com/user/create' \
   -H 'accept: application/json' \
   -H 'access_token: taskman' \
   -H 'Content-Type: application/json' \
@@ -20,7 +20,7 @@ curl -X 'POST' \
   
 3. Task 1:
 curl -X 'POST' \
-  'http://127.0.0.1:3000/crud/create' \
+  'http://task-manager-api-vitd.onrender.com/crud/create' \
   -H 'accept: application/json' \
   -H 'access_token: taskman' \
   -H 'Content-Type: application/json' \
@@ -39,7 +39,7 @@ curl -X 'POST' \
   
 5. Task 2:
 curl -X 'POST' \
-  'http://127.0.0.1:3000/crud/create' \
+  'http://task-manager-api-vitd.onrender.com/crud/create' \
   -H 'accept: application/json' \
   -H 'access_token: taskman' \
   -H 'Content-Type: application/json' \
