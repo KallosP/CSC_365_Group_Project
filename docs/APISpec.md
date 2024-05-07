@@ -9,7 +9,7 @@ Create a new task.
 **Request**:
 ```json
 {
-    "task_id": "int",
+    "user_id": "int",
     "name": "string",
     "description": "string",
     "priority": "string", /* "high", "medium", or "low" */
