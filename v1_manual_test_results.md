@@ -52,10 +52,10 @@ curl -X 'POST' \
   "due_date": "2024-24-07T04:47:02.715Z",
   "end_date": "9999-12-31T23:59:59.999Z"
 }'
-4. Response:
+## 6. Response:
  "OK"
 
-## 6. Task 3:
+## 7. Task 3:
 curl -X 'POST' \
   'http://task-manager-api-vitd.onrender.com/crud/create' \
   -H 'accept: application/json' \
