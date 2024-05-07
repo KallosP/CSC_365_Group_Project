@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 class Task(BaseModel):
-    task_id: int
+    user_id: int
     name: str
     description: str
     priority: str
@@ -29,11 +29,11 @@ def create_task(task: Task):
     with db.engine.begin() as connection:
         connection.execute(sqlalchemy.text(
             """
-            INSERT INTO tasks (name, description, priority, status, start_date, due_date, end_date)
+            INSERT INTO tasks (user_id, name, description, priority, status, start_date, due_date, end_date)
             VALUES
-            (:name, :description, :priority, :status, :start_date, :due_date, :end_date)
+            (:user_id, :name, :description, :priority, :status, :start_date, :due_date, :end_date)
             """
-            ), [{"name": task.name, "description": task.description, "priority": task.priority,
+            ), [{"user_id": task.user_id, "name": task.name, "description": task.description, "priority": task.priority,
                 "status": task.status, "start_date": task.start_date, "due_date": task.due_date,
                 "end_date": task.end_date}])
     return "OK"
