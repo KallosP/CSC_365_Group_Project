@@ -58,7 +58,7 @@ curl -X 'POST' \
 
 6. Task 3:
 curl -X 'POST' \
-  'http://127.0.0.1:3000/crud/create' \
+  'http://task-manager-api-vitd.onrender.com/crud/create' \
   -H 'accept: application/json' \
   -H 'access_token: taskman' \
   -H 'Content-Type: application/json' \
