@@ -31,12 +31,11 @@ def create_user(user: User):
             ), [{"user_name": user.user_name, "password": user.password}])
         
         # if no user id is returned, the username already exists
-        if result.rowcount < 1:
-            id = -1
-        else:
-            id = result.one().user_id
+        user_id = -1
+        if result.rowcount > 0:
+            user_id = result.one().user_id
 
-    return {"user_id": id}
+    return {"user_id": user_id}
 
 @router.post("/login")
 def login(user: User):
@@ -52,9 +51,8 @@ def login(user: User):
             ), [{"user_name": user.user_name, "password": user.password}])
         
         # no matching username and password combination
-        if result.rowcount < 1:
-            id = -1
-        else:
-            id = result.one().user_id
+        user_id = -1
+        if result.rowcount > 0:
+            user_id = result.one().user_id
 
-    return {"user_id": id}
+    return {"user_id": user_id}

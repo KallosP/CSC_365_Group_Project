@@ -23,7 +23,7 @@ Create a new task.
 **Response**:
 ```json
 {
-    "success": "boolean"
+    "task_id": "int"
 }
 ```
 
