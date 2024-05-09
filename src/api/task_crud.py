@@ -52,7 +52,7 @@ def read_task(task_id: int):
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text(
             """
-            SELECT user_id, name, description, priority, status, start_date, due_date, end_date
+            SELECT name, description, priority, status, start_date, due_date, end_date
             FROM tasks
             WHERE task_id = :task_id AND user_id = :user_id
             """
@@ -63,7 +63,6 @@ def read_task(task_id: int):
         if result.rowcount > 0:
             row = result.one()
             task = {
-                "user_id": row.user_id,
                 "name": row.name,
                 "description": row.description,
                 "priority": row.priority,
@@ -82,7 +81,7 @@ def update_task(task_id: int, task: Task):
         return "ERROR: Invalid login ID"
 
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text(
+        result = connection.execute(sqlalchemy.text(
             """
             UPDATE tasks SET 
             name = COALESCE(:name, name),
@@ -93,12 +92,16 @@ def update_task(task_id: int, task: Task):
             due_date = COALESCE(:due_date, due_date),
             end_date = COALESCE(:end_date, end_date)
             WHERE task_id = :task_id AND user_id = :user_id
+            RETURNING *
             """
         ), [{"task_id": task_id, "user_id": user.login_id, "name": task.name, 
              "description": task.description, "priority": task.priority, "status": task.status, 
              "start_date": task.start_date, "due_date": task.due_date, "end_date": task.end_date}])
+        
+        if result.rowcount > 0:
+            return "OK"
 
-    return "OK"
+    return "ERROR: Task not found"
 
 
 @router.post("/delete/{task_id}")
