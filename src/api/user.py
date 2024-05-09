@@ -4,6 +4,8 @@ from src import database as db
 import sqlalchemy
 from pydantic import BaseModel
 
+login_id = -1
+
 router = APIRouter(
     prefix="/user",
     tags=["user"],
@@ -30,12 +32,14 @@ def create_user(user: User):
             """
             ), [{"user_name": user.user_name, "password": user.password}])
         
-        # if no user id is returned, the username already exists
-        user_id = -1
+        global login_id
         if result.rowcount > 0:
-            user_id = result.one().user_id
+            login_id = result.one().user_id
+        else:
+            login_id = -1
+            return "ERROR: Username already exists"
 
-    return {"user_id": user_id}
+    return "OK"
 
 @router.post("/login")
 def login(user: User):
@@ -49,10 +53,12 @@ def login(user: User):
             LIMIT 1
             """
             ), [{"user_name": user.user_name, "password": user.password}])
-        
-        # no matching username and password combination
-        user_id = -1
+    
+        global login_id
         if result.rowcount > 0:
-            user_id = result.one().user_id
+            login_id = result.one().user_id
+        else:
+            login_id = -1
+            return "ERROR: Incorrect username or password"
 
-    return {"user_id": user_id}
+    return "OK"
