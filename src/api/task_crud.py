@@ -13,10 +13,9 @@ router = APIRouter(
 )
 
 class Task(BaseModel):
-    # Required fields
-    name: str
-
-    # Optional
+    # NOTE: All fields are optional to allow flexibility in update_task
+    
+    name: str = None
     description: str = None
     priority: str = None
     status: str = None
@@ -75,3 +74,50 @@ def read_task(task_id: int):
             }
 
     return task
+
+@router.post("/update/{task_id}")
+def update_task(task_id: int, task: Task):
+
+    if user.login_id < 0:
+        return "ERROR: Invalid login ID"
+
+    with db.engine.begin() as connection:
+        connection.execute(sqlalchemy.text(
+            """
+            UPDATE tasks SET 
+            name = COALESCE(:name, name),
+            description = COALESCE(:description, description),
+            priority = COALESCE(:priority, priority),
+            status = COALESCE(:status, status),
+            start_date = COALESCE(:start_date, start_date),
+            due_date = COALESCE(:due_date, due_date),
+            end_date = COALESCE(:end_date, end_date)
+            WHERE task_id = :task_id AND user_id = :user_id
+            """
+        ), [{"task_id": task_id, "user_id": user.login_id, "name": task.name, 
+             "description": task.description, "priority": task.priority, "status": task.status, 
+             "start_date": task.start_date, "due_date": task.due_date, "end_date": task.end_date}])
+
+    return "OK"
+
+
+@router.post("/delete/{task_id}")
+def delete_task(task_id: int):
+
+    if user.login_id < 0:
+        return "ERROR: Invalid login ID"
+
+    with db.engine.begin() as connection:
+        result = connection.execute(sqlalchemy.text(
+            """
+            DELETE FROM tasks
+            WHERE task_id = :task_id AND user_id = :user_id
+            RETURNING *
+            """
+        ), [{"task_id": task_id, "user_id": user.login_id}])
+
+        # check if a task was deleted
+        if result.rowcount > 0:
+            return "OK"
+    
+    return "ERROR: Task not found"
