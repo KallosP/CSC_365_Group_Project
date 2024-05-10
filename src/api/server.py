@@ -1,7 +1,7 @@
 from fastapi import FastAPI, exceptions
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
-from src.api import task_crud, user
+from src.api import task_crud, user, sort
 import json
 import logging
 import sys
@@ -39,6 +39,7 @@ app.add_middleware(
 # NOTE: This is where endpoints are added
 app.include_router(task_crud.router)
 app.include_router(user.router)
+app.include_router(sort.router)
 
 @app.exception_handler(exceptions.RequestValidationError)
 @app.exception_handler(ValidationError)

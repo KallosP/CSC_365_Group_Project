@@ -44,9 +44,9 @@ Gets the informaiton associated with an existing task.
     "description": "string",
     "priority": "string",      /* "high", "medium", or "low" */
     "status": "string",        /* "complete", "not started", "in progress" */
-    "start_date": "timestamp", /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
-    "due_date": "timestamp",   /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
-    "end_date": "timestamp"    /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+    "start_date": "timestamp", /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
+    "due_date": "timestamp",   /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
+    "end_date": "timestamp"    /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
 }
 ```
 
@@ -167,39 +167,31 @@ Removes tags from a task
 
 ## 4. Sort Tasks
 
-### 4.1 Sort Tasks by Tag - `sort/tags` (GET)
+### 4.1 Sort Tasks by Field - `sort/{field}` (GET)
 
-Displays all tasks with given tags first
+Sort tasks by provided field (excluding description)  
 
 **Request**:
 ```json
 {
-  "tags": ["string", "string", ...]
+  "field": "string" /* Valid fields to sort by: name, priority, status, start_date, due_date, end_date */
 }
+
 ```
 
-**Response**:
-```json
-[
-    {
-      "name": "string",
-      "status": "string",
-      "tags": ["string", "string", ...]
-    },
-    {
-        ...
-    }
-] 
-```
-
-### 4.2 Sort Tasks by Field - `sort/{field}` (GET)
  **Response**:
 ```json
 [
+
     {
     "name": "string",
-    "status": "string",
-    "tags": ["string", "string", ...]
+    "description": "string",
+    "priority": "string",      /* "high", "medium", or "low" */
+    "status": "string",        /* "complete", "not started", "in progress" */
+    "start_date": "timestamp", /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
+    "due_date": "timestamp",   /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
+    "end_date": "timestamp"    /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
+
     },
     {
         ...
