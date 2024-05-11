@@ -202,6 +202,7 @@ Sort tasks by provided field (excluding description)
 ### 4.2 Sort Tasks by Tag - `sort/tags` (GET)
 
 Displays all tasks with given tags first
+
 **Request**:
 ```json
 {
