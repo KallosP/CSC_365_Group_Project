@@ -199,6 +199,36 @@ Sort tasks by provided field (excluding description)
 ] 
 ```
 
+### 4.2 Sort Tasks by Tag - `sort/tags` (GET)
+
+Displays all tasks with given tags first
+**Request**:
+```json
+{
+  "tags": ["string", "string", ...]
+}
+```
+
+**Response**:
+```json
+[
+
+    {
+    "name": "string",
+    "description": "string",
+    "priority": "string",      /* "high", "medium", or "low" */
+    "status": "string",        /* "complete", "not started", "in progress" */
+    "start_date": "timestamp", /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
+    "due_date": "timestamp",   /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
+    "end_date": "timestamp"    /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
+
+    },
+    {
+        ...
+    }
+] 
+```
+
 ## 5. User Account
 ### 5.1 Account Creation - `user/create` (POST)
 **Request**:
