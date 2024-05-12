@@ -67,10 +67,28 @@ curl -X 'POST' \
 "OK"
 
 # Example Flow 3
-Robert owns a computer repair shop and uses the task manager to categorize repairs by their tags. He has tags for "laptop" or "desktop", the operating system "windows", "mac", or "linux", as well as the type of repair "display", "battery", "malware", among others. He recieves an order from a customer with a Windows laptop that won't turn on and he creates a task for it using POST /crud/create which returns an ID of 341. After determining the issue is with the battery, he adds a tag to the task using POST tags/341/add with the request { "tags": ["battery"] }. Before making an order for a new battery, he views all tasks with the tag "battery" using GET sort/tags with the request { "tags": ["battery"] }.
+Robert owns a computer repair shop and uses the task manager to categorize repairs by their tags. He has tags for "laptop" or "desktop", the operating system "windows", "mac", or "linux", as well as the type of repair "display", "battery", "malware", among others. He receives an order from a customer with a Windows laptop that won't turn on and he creates a task for it using POST /crud/create which returns an ID of 341. After determining the issue is with the battery, he adds a tag to the task using POST tags/341/add with the request { "tags": ["battery"] }. Before making an order for a new battery, he views all tasks with the tag "battery" using GET sort/tags with the request { "tags": ["battery"] }.
 
 # Testing results
-## 1. :
+## 1. Login:
+curl -X 'POST' \
+  'http://task-manager-api-vitd.onrender.com/user/login' \
+  -H 'accept: application/json' \
+  -H 'access_token: taskman' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "user_name": "Robert",
+  "password": "mypass"
+}'
 ## 2. Response:
-{
-} 
+    "OK"
+## 3. Create:
+curl -X 'GET' \
+  'http://127.0.0.1:3000/create' \
+  -H 'accept: application/json' \
+  -H 'access_token: taskman'
+## 4. Response:
+## 5. Add tag:
+## 6. Response:
+## 7. Sorting:
+## 8. Response:
