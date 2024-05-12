@@ -45,6 +45,8 @@ def create_user(sort_col: sort_options = sort_options.due_date,
     if user.login_id < 0:
         return "ERROR: Invalid login ID"
 
+    # TODO: change sorting of priority and status from being alphabetic 
+
     if sort_col is sort_options.name:
         order_by_col = tasks.c.name
     elif sort_col is sort_options.priority:
@@ -65,7 +67,7 @@ def create_user(sort_col: sort_options = sort_options.due_date,
     else:  # default is desc
         order_by = sqlalchemy.desc(order_by_col)
         
-     # Construct the query
+    # Construct the query
     stmt = (
         sqlalchemy.select(
             tasks.c.name,
