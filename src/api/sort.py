@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from src.api import auth
 from src import database as db
 import sqlalchemy
@@ -32,8 +32,8 @@ metadata = MetaData()
 
 tasks = Table('tasks', metadata, autoload_with=engine)
 
-@router.get("/sort")
-def create_user(sort_col: sort_options = sort_options.due_date,
+@router.get("/")
+def sort(sort_col: sort_options = sort_options.due_date,
                 sort_order: sort_order = sort_order.desc):
     """
     sort_col = which columns to sort by
@@ -103,4 +103,96 @@ def create_user(sort_col: sort_options = sort_options.due_date,
             )
 
 
+    return {"results": json}
+
+tags_table = Table('tags', metadata, autoload_with=engine)
+
+@router.get("/tags")
+def sort_by_tags(tag: str):
+    
+    # Check for valid user
+    if user.login_id < 0:
+        return "ERROR: Invalid login ID"
+
+    # Logic: Query all tasks that have the given tag, append them first
+    #        to the json object. Then append the rest of the tasks that
+    #        don't have the given tag to the json. 
+
+   # Query for tasks with given tag
+    stmt_with_tag = (
+        sqlalchemy.select(
+            tags_table.c.name.label("tag_name"),
+            tasks.c.task_id,
+            tasks.c.name.label("task_name"),
+            tasks.c.description,
+            tasks.c.priority,
+            tasks.c.status,
+            tasks.c.start_date,
+            tasks.c.due_date,
+            tasks.c.end_date
+        )
+        .select_from(tasks)
+        .join(tags_table, tasks.c.task_id == tags_table.c.task_id)
+        .where(tasks.c.user_id == user.login_id)
+        .where(tags_table.c.name == tag)
+    )
+
+    # Query for tasks that do not have given tag
+    stmt_without_tag = (
+        sqlalchemy.select(
+            tags_table.c.name.label("tag_name"),
+            tasks.c.task_id,
+            tasks.c.name.label("task_name"),
+            tasks.c.description,
+            tasks.c.priority,
+            tasks.c.status,
+            tasks.c.start_date,
+            tasks.c.due_date,
+            tasks.c.end_date
+        )
+        # Only select each task once
+        .distinct(tasks.c.task_id)
+        .select_from(tasks)
+        .outerjoin(tags_table, tasks.c.task_id == tags_table.c.task_id)
+        .where(tasks.c.user_id == user.login_id)
+        .where(sqlalchemy.not_(tags_table.c.name == tag))
+    )
+
+    json = []
+
+    # Execute query with tag
+    with db.engine.connect() as conn:
+        result = conn.execute(stmt_with_tag)
+        for row in result:
+            json.append(
+                {
+                    "sorted_by_tag": row.tag_name,
+                    "task_id": row.task_id,
+                    "name": row.task_name,
+                    "description": row.description,
+                    "priority": row.priority,
+                    "status": row.status,
+                    "start_date": row.start_date,
+                    "due_date": row.due_date,
+                    "end_date": row.end_date
+                }
+            )
+
+        # Execute query without tag
+        result = conn.execute(stmt_without_tag)
+        for row in result:
+            json.append(
+                {
+                    # Exclude display of tag
+                    "task_id": row.task_id,
+                    "name": row.task_name,
+                    "description": row.description,
+                    "priority": row.priority,
+                    "status": row.status,
+                    "start_date": row.start_date,
+                    "due_date": row.due_date,
+                    "end_date": row.end_date
+                }
+            )
+ 
     return {"results": json}
