@@ -28,6 +28,8 @@ create table
     os text null default ''::text,
     repair text null default ''::text,
     user_id bigint null,
+    task_id integer null,
     constraint tags_pkey primary key (tag_id),
+    constraint tags_task_id_fkey foreign key (task_id) references tasks (task_id),
     constraint tags_user_id_fkey foreign key (user_id) references users (user_id)
   ) tablespace pg_default;

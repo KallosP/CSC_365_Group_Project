@@ -83,10 +83,7 @@ curl -X 'POST' \
 ## 2. Response:
     "OK"
 ## 3. Create:
-curl -X 'GET' \
-  'http://127.0.0.1:3000/create' \
-  -H 'accept: application/json' \
-  -H 'access_token: taskman'
+
 ## 4. Response:
 ## 5. Add tag:
 ## 6. Response:
