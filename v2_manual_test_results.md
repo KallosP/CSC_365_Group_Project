@@ -1,5 +1,5 @@
 # Example Flow 2
-Bob wants to view his tasks by order of due date to see which ones he should work on first. He calls POST user/login and enters his username and password. After getting an "OK" response, he calls POST /sort and sorts by due_date in descending order. This returns a list of tasks in the selected sorting order. He sees a task marked as "in progress" due today with task_id 28 and finishes working on it. He then calls PATCH /crud/update/28 and sets the status to "complete" and recieves an "OK" response, letting him know it succesfully updated.
+Bob wants to view his tasks by order of due date to see which ones he should work on first. He calls POST user/login and enters his username and password. After getting an "OK" response, he calls GET /sort and sorts by due_date in descending order. This returns a list of tasks in the selected sorting order. He sees a task marked as "in progress" due today with task_id 28 and finishes working on it. He then calls PATCH /crud/update/28 and sets the status to "complete" and recieves an "OK" response, letting him know it succesfully updated.
 
 # Testing results
 ## 1. Login:
@@ -15,11 +15,10 @@ curl -X 'POST' \
 ## 2. Response:
     "OK"
 ## 3. Sorting:
-curl -X 'POST' \
-  'http://task-manager-api-vitd.onrender.com/sort/sort?sort_col=due_date&sort_order=asc' \
+curl -X 'GET' \
+  'http://127.0.0.1:3000/sort/sort?sort_col=due_date&sort_order=desc' \
   -H 'accept: application/json' \
-  -H 'access_token: taskman' \
-  -d ''
+  -H 'access_token: taskman'
 ## 4. Response:
 {
   "results": [
