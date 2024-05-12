@@ -70,6 +70,7 @@ def create_user(sort_col: sort_options = sort_options.due_date,
     # Construct the query
     stmt = (
         sqlalchemy.select(
+            tasks.c.task_id,
             tasks.c.name,
             tasks.c.description,
             tasks.c.priority,
@@ -90,6 +91,7 @@ def create_user(sort_col: sort_options = sort_options.due_date,
         for row in result:
             json.append(
                 {
+                    "task_id": row.task_id,
                     "name": row.name,
                     "description": row.description,
                     "priority": row.priority,
