@@ -13,25 +13,33 @@ router = APIRouter(
 )
 
 class Tag(BaseModel):
-    type: str = None
-    os: str = None
-    repair: str = None
-    task_id: int = 0
+    name: str = None
 
-@router.post("/add")
-def add_tag(tag: Tag):
+@router.post("{task_id}/add")
+def add_tag(task_id: int, tag: Tag):
     if user.login_id < 0:
         return "ERROR: Invalid login ID"
     
     with db.engine.begin() as connection:
-        tag_id = connection.execute(sqlalchemy.text(
+
+        # Check if task_id exists
+        exists = connection.execute(sqlalchemy.text(
             """
-            INSERT INTO tags (user_id, task_id, type, os, repair)
+            SELECT task_id
+            FROM tasks
+            WHERE task_id = :task_id
+            """
+            ), [{"task_id": task_id}]).fetchone()
+
+        if exists == None:
+            return "ERROR: task_id not found"
+
+        connection.execute(sqlalchemy.text(
+            """
+            INSERT INTO tags (user_id, task_id, name)
             VALUES
-            (:user_id, :task_id, :type, :os, :repair)
-            RETURNING tag_id
+            (:user_id, :task_id, :name)
             """
-            ), [{"user_id": user.login_id, "task_id": tag.task_id, "type": tag.type, "os": tag.os, 
-                "repair": tag.repair}]).one().tag_id
+            ), [{"user_id": user.login_id, "task_id": task_id, "name": tag.name}])
     
-    return {"task_id": tag_id}
+    return {"OK"}
