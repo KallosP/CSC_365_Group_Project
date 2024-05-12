@@ -4,7 +4,7 @@ Bob wants to view his tasks by order of due date to see which ones he should wor
 # Testing results
 ## 1. Login:
 curl -X 'POST' \
-  'http://127.0.0.1:3000/user/login' \
+  'http://task-manager-api-vitd.onrender.com/user/login' \
   -H 'accept: application/json' \
   -H 'access_token: taskman' \
   -H 'Content-Type: application/json' \
@@ -16,7 +16,7 @@ curl -X 'POST' \
     "OK"
 ## 3. Sorting:
 curl -X 'POST' \
-  'http://127.0.0.1:3000/sort/sort?sort_col=due_date&sort_order=asc' \
+  'http://task-manager-api-vitd.onrender.com/sort/sort?sort_col=due_date&sort_order=asc' \
   -H 'accept: application/json' \
   -H 'access_token: taskman' \
   -d ''
@@ -57,7 +57,7 @@ curl -X 'POST' \
 }
 ## 5. Update Status:
 curl -X 'POST' \
-  'http://127.0.0.1:3000/crud/update/28' \
+  'http://task-manager-api-vitd.onrender.com/crud/update/28' \
   -H 'accept: application/json' \
   -H 'access_token: taskman' \
   -H 'Content-Type: application/json' \
