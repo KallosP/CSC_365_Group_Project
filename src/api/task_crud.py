@@ -23,11 +23,23 @@ class Task(BaseModel):
     due_date: datetime = None
     end_date: datetime = None
 
+def priorityIsValid (priority: str):
+    return priority is None or priority.lower() in ["high", "medium", "low"]
+           
+def statusIsValid (status: str):
+    return status is None or status.lower() in ["complete", "in progress", "not started"]
+
 @router.post("/create")
 def create_task(task: Task):
 
     if user.login_id < 0:
         return "ERROR: Invalid login ID"
+
+    if not priorityIsValid(task.priority):
+        return "ERROR: priority field must match one of the following: 'high', 'medium', or 'low'"
+
+    if not statusIsValid(task.status):
+        return "ERROR: status field must match one of the following: 'complete', 'in progress', or 'not started'"
     
     with db.engine.begin() as connection:
         task_id = connection.execute(sqlalchemy.text(
@@ -79,6 +91,12 @@ def update_task(task_id: int, task: Task):
 
     if user.login_id < 0:
         return "ERROR: Invalid login ID"
+
+    if not priorityIsValid(task.priority):
+        return "ERROR: priority field must match one of the following: 'high', 'medium', or 'low'"
+
+    if not statusIsValid(task.status):
+        return "ERROR: status field must match one of the following: 'complete', 'in progress', or 'not started'"
 
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text(
