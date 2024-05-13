@@ -67,7 +67,7 @@ curl -X 'POST' \
 "OK"
 
 # Example Flow 3
-Robert owns a computer repair shop and uses the task manager to categorize repairs by their tags. He has tags for "laptop" or "desktop", the operating system "windows", "mac", or "linux", as well as the type of repair "display", "battery", "malware", among others. He receives an order from a customer with a Windows laptop that won't turn on and he creates a task for it using POST /crud/create which returns an ID of 30. After determining the issue is with the battery, he adds a tag to the task using POST tags/30/add with the request { "name": ["battery"] } and recieves an "OK" response. Before making an order for a new battery, he views all tasks with the tag "battery" before the other tasks using GET sort/tags with the request { "tags": ["battery"] }.
+Robert owns a computer repair shop and uses the task manager to categorize repairs by their tags. He has tags for "laptop" or "desktop", the operating system "windows", "mac", or "linux", as well as the type of repair "display", "battery", "malware", among others. He receives an order from a customer with a Windows laptop that won't turn on. He logs into the Task Manager API with POST user/login and creates a task for it using POST /crud/create which returns an ID of 30. After determining the issue is with the battery, he adds a tag to the task using POST tags/30/add with the request { "name": ["battery"] } and recieves an "OK" response. Before making an order for a new battery, he views all tasks with the tag "battery" before the other tasks using GET sort/tags with the request { "tags": ["battery"] }.
 
 # Testing results
 ## 1. Login:
