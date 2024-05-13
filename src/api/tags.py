@@ -55,3 +55,67 @@ def add_tag(task_id: int, tag: Tag):
             ), [{"user_id": user.login_id, "task_id": task_id, "name": tag.name}])
     
     return {"OK"}
+
+@router.post("{task_id}")
+def get_tags(task_id: int):
+    if user.login_id < 0:
+        return "ERROR: Invalid login ID"
+    with db.engine.begin() as connection:
+
+        # Check if task_id exists
+        exists = connection.execute(sqlalchemy.text(
+            """
+            SELECT task_id
+            FROM tasks
+            WHERE task_id = :task_id
+            """
+            ), [{"task_id": task_id}]).fetchone()
+
+        if exists == None:
+            return "ERROR: task_id not found"
+        
+        tags = connection.execute(sqlalchemy.text(
+            """
+            SELECT DISTINCT name
+            FROM tags
+            WHERE task_id = :task_id
+            """
+            ), [{"task_id": task_id}])
+        result = []
+        for tag in tags:
+            result.append(tag[0])
+        return result
+    
+class Tags(BaseModel):
+    names: list[str] = None
+
+
+@router.post("{task_id}/remove")
+def remove_tag(task_id: int, tags: Tags):
+    if user.login_id < 0:
+        return "ERROR: Invalid login ID"
+    with db.engine.begin() as connection:
+
+        # Check if task_id exists
+        exists = connection.execute(sqlalchemy.text(
+            """
+            SELECT task_id
+            FROM tasks
+            WHERE task_id = :task_id
+            """
+            ), [{"task_id": task_id}]).fetchone()
+
+        if exists == None:
+            return "ERROR: task_id not found"
+        print(f"tags: {tags.names}")
+        
+        connection.execute(sqlalchemy.text(
+            """
+            DELETE FROM tags
+            WHERE task_id = :task_id
+            AND name IN :names
+            """
+            ), [{"task_id": task_id, "names": tuple(tags.names)}])
+        
+    return {"OK"}
+        
