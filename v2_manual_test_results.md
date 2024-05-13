@@ -67,7 +67,7 @@ curl -X 'POST' \
 "OK"
 
 # Example Flow 3
-Robert owns a computer repair shop and uses the task manager to categorize repairs by their tags. He has tags for "laptop" or "desktop", the operating system "windows", "mac", or "linux", as well as the type of repair "display", "battery", "malware", among others. He receives an order from a customer with a Windows laptop that won't turn on and he creates a task for it using POST /crud/create which returns an ID of 341. After determining the issue is with the battery, he adds a tag to the task using POST tags/341/add with the request { "tags": ["battery"] }. Before making an order for a new battery, he views all tasks with the tag "battery" using GET sort/tags with the request { "tags": ["battery"] }.
+Robert owns a computer repair shop and uses the task manager to categorize repairs by their tags. He has tags for "laptop" or "desktop", the operating system "windows", "mac", or "linux", as well as the type of repair "display", "battery", "malware", among others. He receives an order from a customer with a Windows laptop that won't turn on and he creates a task for it using POST /crud/create which returns an ID of 30. After determining the issue is with the battery, he adds a tag to the task using POST tags/30/add with the request { "name": ["battery"] } and recieves an "OK" response. Before making an order for a new battery, he views all tasks with the tag "battery" before the other tasks using GET sort/tags with the request { "tags": ["battery"] }.
 
 # Testing results
 ## 1. Login:
@@ -83,9 +83,75 @@ curl -X 'POST' \
 ## 2. Response:
     "OK"
 ## 3. Create:
-
+curl -X 'POST' \
+  'https://task-manager-api-vitd.onrender.com/crud/create' \
+  -H 'accept: application/json' \
+  -H 'access_token: taskman' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "name": "Fix Windows Laptop",
+  "description": "Windows laptop now turning on/booting.",
+  "priority": "medium",
+  "status": "in progress",
+  "start_date": "2024-05-13T00:40:43.639Z",
+  "due_date": "2024-06-13T00:40:43.639Z"
+}'
 ## 4. Response:
+{
+  "task_id": 30
+}
 ## 5. Add tag:
+curl -X 'POST' \
+  'https://task-manager-api-vitd.onrender.com/tags30/add' \
+  -H 'accept: application/json' \
+  -H 'access_token: taskman' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "name": "battery"
+}'
 ## 6. Response:
+[
+  "OK"
+]
 ## 7. Sorting:
+curl -X 'GET' \
+  'https://task-manager-api-vitd.onrender.com/sort/tags?tag=battery' \
+  -H 'accept: application/json' \
+  -H 'access_token: taskman'
 ## 8. Response:
+{
+  "results": [
+    {
+      "sorted_by_tag": "battery",
+      "task_id": 30,
+      "name": "Fix Windows Laptop",
+      "description": "Windows laptop now turning on/booting.",
+      "priority": "medium",
+      "status": "in progress",
+      "start_date": "2024-05-13T00:40:43.639000+00:00",
+      "due_date": "2024-06-13T00:40:43.639000+00:00",
+      "end_date": null
+    },
+    {
+      "sorted_by_tag": "battery",
+      "task_id": 31,
+      "name": "Fix Mac",
+      "description": "Mac laptop with guaranteed battery issue.",
+      "priority": "medium",
+      "status": "not started",
+      "start_date": null,
+      "due_date": "2024-07-13T00:40:43.639000+00:00",
+      "end_date": null
+    },
+    {
+      "task_id": 32,
+      "name": "Figure out malware issue",
+      "description": "Windows PC infected with malware, need to ask customer for more info.",
+      "priority": "low",
+      "status": "not started",
+      "start_date": null,
+      "due_date": "2024-10-13T00:40:43.639000+00:00",
+      "end_date": null
+    }
+  ]
+}
