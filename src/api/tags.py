@@ -33,6 +33,17 @@ def add_tag(task_id: int, tag: Tag):
 
         if exists == None:
             return "ERROR: task_id not found"
+        
+        tag_exists = connection.execute(sqlalchemy.text(
+            """
+            SELECT tag_id
+            FROM tags
+            WHERE task_id = :task_id AND name = :tag
+            """
+            ), [{"task_id": task_id, "tag": tag.name}]).fetchone()
+        
+        if tag_exists:
+            return "ERROR: tag already exists for task"
 
         connection.execute(sqlalchemy.text(
             """
