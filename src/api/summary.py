@@ -12,7 +12,7 @@ router = APIRouter(
     dependencies=[Depends(auth.get_api_key)],
 )
 
-@router.post("")
+@router.get("")
 def summary():
 
     if user.login_id < 0:
