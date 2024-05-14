@@ -107,15 +107,17 @@ def remove_tag(task_id: int, tags: Tags):
 
         if exists == None:
             return "ERROR: task_id not found"
-        print(f"tags: {tags.names}")
         
-        connection.execute(sqlalchemy.text(
+        deleted = connection.execute(sqlalchemy.text(
             """
             DELETE FROM tags
             WHERE task_id = :task_id
             AND name IN :names
             """
             ), [{"task_id": task_id, "names": tuple(tags.names)}])
+        
+        if deleted.rowcount <= 0:
+            return "ERROR: Could not delete, tag not found."
         
     return {"OK"}
         
