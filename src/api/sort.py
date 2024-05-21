@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 from src.api import auth
 from src import database as db
 import sqlalchemy
 from sqlalchemy import create_engine, Table, MetaData
-from pydantic import BaseModel
 from enum import Enum
 import src.api.user as user
 import os
@@ -26,8 +25,7 @@ class sort_order(str, Enum):
     asc = "asc"
     desc = "desc"   
 
-db_uri = os.getenv('POSTGRES_URI')
-engine = create_engine(db_uri)
+engine = db.engine
 metadata = MetaData()
 
 tasks = Table('tasks', metadata, autoload_with=engine)

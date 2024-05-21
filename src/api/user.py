@@ -39,7 +39,7 @@ def create_user(user: User):
             login_id = -1
             return "ERROR: Username already exists"
 
-    return "OK"
+    return {"user_id": login_id}
 
 @router.post("/login")
 def login(user: User):

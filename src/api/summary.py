@@ -2,8 +2,6 @@ from fastapi import APIRouter, Depends
 from src.api import auth
 from src import database as db
 import sqlalchemy
-from pydantic import BaseModel
-from datetime import datetime
 import src.api.user as user
 
 router = APIRouter(
@@ -15,11 +13,12 @@ router = APIRouter(
 @router.get("")
 def summary():
 
+    # Validate user
     if user.login_id < 0:
         return "ERROR: Invalid login ID"
     
+    # Fetch summary info from db
     with db.engine.begin() as connection:
-        
         # there is probably a better way to do this
         result = connection.execute(sqlalchemy.text(
             """

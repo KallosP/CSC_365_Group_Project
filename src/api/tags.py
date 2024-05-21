@@ -3,7 +3,6 @@ from src.api import auth
 from src import database as db
 import sqlalchemy
 from pydantic import BaseModel
-from datetime import datetime
 import src.api.user as user
 
 router = APIRouter(
@@ -17,11 +16,11 @@ class Tag(BaseModel):
 
 @router.post("{task_id}/add")
 def add_tag(task_id: int, tag: Tag):
+    # Validate user
     if user.login_id < 0:
         return "ERROR: Invalid login ID"
     
     with db.engine.begin() as connection:
-
         # Check if task_id exists
         exists = connection.execute(sqlalchemy.text(
             """

@@ -71,13 +71,7 @@ Update an existing task.
 **Response**:
 ```json
 {
-    "name": "string",
-    "description": "string",
-    "priority": "string",      /* "high", "medium", or "low" */
-    "status": "string",        /* "complete", "not started", "in progress" */
-    "start_date": "timestamp", /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
-    "due_date": "timestamp",   /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
-    "end_date": "timestamp"    /* ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+  "OK"
 }
 ```
 
@@ -95,7 +89,7 @@ Delete an existing task.
 **Response**:
 ```json
 {
-    "success": "boolean"
+    "OK"
 }
 ```
 
@@ -130,6 +124,8 @@ Return a list of all tags associated with the task.
 
 ### 3.2 Adding Tags - `tags/{task_id}/add` (POST)
 
+Adds tags to a task.
+
 **Request**:
 ```json
 {
@@ -137,13 +133,10 @@ Return a list of all tags associated with the task.
 }
 ```
 
-Adds tags to a task.
-
-
 **Response**:
 ```json
 {
-  "success": "boolean"
+  "OK"
 }
 ```
 
@@ -161,7 +154,7 @@ Removes tags from a task
 **Response**:
 ```json
 {
-  "success": "boolean"
+  "OK"
 }
 ```
 
@@ -232,6 +225,9 @@ Displays all tasks with given tags first
 
 ## 5. User Account
 ### 5.1 Account Creation - `user/create` (POST)
+
+Creating an account also logs the user in.
+
 **Request**:
 ```json
 {
@@ -242,7 +238,7 @@ Displays all tasks with given tags first
 **Response**:
 ```json
 {
-  "success": "boolean"
+  "OK"
 }
 ```
 ### 5.2 Login - `user/login` (POST)
@@ -256,7 +252,7 @@ Displays all tasks with given tags first
 **Response**:
 ```json
 {
-  "success": "boolean"
+  "OK"
 }
 ```
 

@@ -23,9 +23,9 @@ class Task(BaseModel):
     due_date: datetime = None
     end_date: datetime = None
 
+# User input validation
 def priorityIsValid (priority: str):
     return priority is None or priority.lower() in ["high", "medium", "low"]
-           
 def statusIsValid (status: str):
     return status is None or status.lower() in ["complete", "in progress", "not started"]
 
