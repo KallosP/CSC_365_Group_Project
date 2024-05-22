@@ -16,6 +16,8 @@
 13. Updated `ExampleFlows.md`.
 14. Works well enough for now, will consider for future.
 ### (Emanuel Gonzalez)
+### (Srish Maulik)
+### (Sri Bala)
 
 ## Schema/API Design Comments
 ### (Sophia Chang)
@@ -31,7 +33,18 @@
 10. Fixed so that name is required.
 11. Similar to `9`, if the user doesn't want to use those fields, then they exclude them from the request. All excluded information is set to `NULL`.
 12. Will consider this for a future endpoint.
+
 ## Test Results
 ### (Sophia Chang)
-1. 
+All tests work as intended/no errors found.
+### (Emanuel Gonzalez)
+### (Srish Maulik)
+### (Sri Bala)
+
 ## Product Ideas
+### (Sophia Chang)
+1. Though a fun suggestion, this API is not intended to be gamified. Rather, it's moreso meant to be a practical tool used for organizing tasks. However, the idea of the user having/setting a goal and checking it off sounds a like a good feature. Will consider this as a feature for the complex endpoint.
+2. This idea sounds interesting. Incorporating shared tasks between users could be useful in the case that a group/team is using the API. Something that we'd have to consider in implementing this would be handling concurrency issues, such as when two users update a task at the same time. Additionally, this can be expanded to allow users to create groups/organizations where they can invite other users to join/work on shared tasks.
+### (Emanuel Gonzalez)
+### (Srish Maulik)
+### (Sri Bala)
