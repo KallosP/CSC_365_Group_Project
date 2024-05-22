@@ -42,6 +42,11 @@ def create_task(task: Task):
         return "ERROR: status field must match one of the following: 'complete', 'in progress', or 'not started'"
     
     with db.engine.begin() as connection:
+
+        # Ensure task has a name
+        if task.name == None:
+            return "ERROR: Task must have name"
+
         task_id = connection.execute(sqlalchemy.text(
             """
             INSERT INTO tasks (user_id, name, description, priority, status, start_date, due_date, end_date)
@@ -117,7 +122,7 @@ def update_task(task_id: int, task: Task):
              "start_date": task.start_date, "due_date": task.due_date, "end_date": task.end_date}])
         
         if result.rowcount > 0:
-            return "OK"
+            return "OK: Task successfully updated"
 
     return "ERROR: Task not found"
 
@@ -139,6 +144,6 @@ def delete_task(task_id: int):
 
         # check if a task was deleted
         if result.rowcount > 0:
-            return "OK"
+            return "OK: Task successfully deleted"
     
     return "ERROR: Task not found"

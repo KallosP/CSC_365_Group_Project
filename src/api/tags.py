@@ -14,7 +14,7 @@ router = APIRouter(
 class Tag(BaseModel):
     name: str = None
 
-@router.post("{task_id}/add")
+@router.post("/add/{task_id}")
 def add_tag(task_id: int, tag: Tag):
     # Validate user
     if user.login_id < 0:
@@ -53,7 +53,7 @@ def add_tag(task_id: int, tag: Tag):
             """
             ), [{"user_id": user.login_id, "task_id": task_id, "name": tag.name}])
     
-    return {"OK"}
+    return "OK: Tag added successfully"
 
 @router.post("{task_id}")
 def get_tags(task_id: int):
@@ -89,7 +89,7 @@ class Tags(BaseModel):
     names: list[str] = None
 
 
-@router.post("{task_id}/remove")
+@router.post("/remove/{task_id}")
 def remove_tag(task_id: int, tags: Tags):
     if user.login_id < 0:
         return "ERROR: Invalid login ID"
@@ -118,5 +118,5 @@ def remove_tag(task_id: int, tags: Tags):
         if deleted.rowcount <= 0:
             return "ERROR: Could not delete, tag not found."
         
-    return {"OK"}
+    return "OK: Tag successfully removed"
         

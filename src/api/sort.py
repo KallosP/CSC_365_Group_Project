@@ -2,10 +2,9 @@ from fastapi import APIRouter, Depends
 from src.api import auth
 from src import database as db
 import sqlalchemy
-from sqlalchemy import create_engine, Table, MetaData
+from sqlalchemy import Table, MetaData
 from enum import Enum
 import src.api.user as user
-import os
 
 router = APIRouter(
     prefix="/sort",
@@ -101,7 +100,7 @@ def sort(sort_col: sort_options = sort_options.due_date,
             )
 
 
-    return {"results": json}
+    return json
 
 tags_table = Table('tags', metadata, autoload_with=engine)
 
@@ -193,4 +192,4 @@ def sort_by_tags(tag: str):
                 }
             )
  
-    return {"results": json}
+    return json

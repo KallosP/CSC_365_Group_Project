@@ -61,4 +61,14 @@ def login(user: User):
             login_id = -1
             return "ERROR: Incorrect username or password"
 
-    return "OK"
+    return "OK: Successfully logged in"
+
+@router.post("/logout")
+def logout():
+
+    global login_id
+    if login_id == -1:
+        return "ERROR: Not logged in"
+    else:
+        login_id = -1
+        return "OK: Successfully logged out"
