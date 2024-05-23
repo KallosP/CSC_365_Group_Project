@@ -47,11 +47,27 @@
 10. Fixed so that name is required.
 11. Similar to `9`, if the user doesn't want to use those fields, then they exclude them from the request. All excluded information is set to `NULL`.
 12. Will consider this for a future endpoint.
+### (Emanuel Gonzalez)
+1. Not a priority at the moment, but can add later if time allows.
+2. The end_date column serves as the date of completion.
+3. Will consider.
+4. Seems redundant / cluttered if we are to implement a projects table.
+5. Good idea, will consider implementing.
+6. Would decrease clutter/messiness for `tags` table, though not a priority at the moment. Will consider changing in the future.
+7. Will consider, but not a big priority since the user can already customize tags through the tag endpoints.
+8. This would be redundant, as the user can already update the tags with the relevant tag endpoints.
+9. Great idea, just added it.
+10. We are considering adding statistical analysis in a future complex endpoint which would cover this.
+11. Will consider adding this.
+12. Will consider adding this, but each user should really only be concerned with their own tasks.
+13. Done, great idea.
+14. Seems like a cool idea, but we don't have anything at the moment needing additional user auth. Will keep in mind.
 
 ## Test Results
 ### (Sophia Chang)
 All tests work as intended/no errors found.
 ### (Emanuel Gonzalez)
+All tests work as intended/no errors found.
 ### (Srish Maulik)
 ### (Sri Bala)
 
@@ -60,6 +76,8 @@ All tests work as intended/no errors found.
 1. Though a fun suggestion, this API is not intended to be gamified. Rather, it's moreso meant to be a practical tool used for organizing tasks. However, the idea of the user having/setting a goal and checking it off sounds like a good feature. Will consider this as a feature for the complex endpoint.
 2. This idea sounds interesting. Incorporating shared tasks between users could be useful in the case that a group/team is using the API. Something that we'd have to consider in implementing this would be handling concurrency issues, such as when two users update a task at the same time. Additionally, this can be expanded to allow users to create groups/organizations where they can invite other users to join/work on shared tasks.
 ### (Emanuel Gonzalez)
+1. Task sharing is a great suggestion, but I'm not sure how "complex" it could be.
+2. This is a good idea, although it might be more intuitive to relate dependent tasks through a "projects" table if we were to go this route.
 
 ### (Srish Maulik)
 ### (Sri Bala)

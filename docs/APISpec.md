@@ -77,7 +77,7 @@ Update an existing task.
 
 ### 1.4. Delete Task - `/crud/delete/{task_id}` (DELETE)
 
-Delete an existing task.
+Delete an existing task (and, if applicable, all associated tags no longer used by any other tasks.)
 
 **Request**:
 ```json
