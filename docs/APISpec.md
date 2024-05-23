@@ -111,7 +111,7 @@ Return a summary of all tasks that have been created.
 
 ## 3. Tag Modification
 
-### 3.1 Gets Tags - `/tags/{task_id}` (GET)
+### 3.1 Get Tags - `/tags/{task_id}` (GET)
 
 Return a list of all tags associated with the task.
 
@@ -122,7 +122,7 @@ Return a list of all tags associated with the task.
 }
 ```
 
-### 3.2 Adding Tags - `tags/{task_id}/add` (POST)
+### 3.2 Adding Tags - `/tags/add/{task_id}` (POST)
 
 Adds tags to a task.
 
@@ -140,7 +140,7 @@ Adds tags to a task.
 }
 ```
 
-### 3.3 Removing Tags - `tags/{task_id}/remove` (POST)
+### 3.3 Removing Tags - `/tags/remove/{task_id}` (POST)
 
 Removes tags from a task
 
@@ -160,16 +160,13 @@ Removes tags from a task
 
 ## 4. Sort Tasks
 
-### 4.1 Sort Tasks by Field - `sort/{field}` (GET)
+### 4.1 Sort Tasks by Field - `/sort` (GET)
 
 Sort tasks by provided field (excluding description)  
 
 **Request**:
-```json
-{
-  "field": "string" /* Valid fields to sort by: name, priority, status, start_date, due_date, end_date */
-}
-
+```
+GET /sort?sort_col=string&sort_order=string
 ```
 
  **Response**:
@@ -192,15 +189,13 @@ Sort tasks by provided field (excluding description)
 ] 
 ```
 
-### 4.2 Sort Tasks by Tag - `sort/tags` (GET)
+### 4.2 Sort Tasks by Tag - `/sort/tags` (GET)
 
 Displays all tasks with given tags first
 
 **Request**:
-```json
-{
-  "tags": ["string", "string", ...]
-}
+```
+GET /sort/tags?tag=string
 ```
 
 **Response**:
@@ -224,7 +219,7 @@ Displays all tasks with given tags first
 ```
 
 ## 5. User Account
-### 5.1 Account Creation - `user/create` (POST)
+### 5.1 Account Creation - `/user/create` (POST)
 
 Creating an account also logs the user in.
 

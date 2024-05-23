@@ -16,12 +16,26 @@
 13. Updated `ExampleFlows.md`.
 14. Works well enough for now, will consider for future.
 ### (Emanuel Gonzalez)
+1. Updated the API specification to match the code for each endpoint path.
+2. Updated the API specification to use query parameters for sort endpoints instead of request bodies.
+3. Updated spec responses.
+4. Comments added in previous code review response.
+5. Endpoint paths are consistent.
+6. Updated the response format.
+7. Adding, getting, and removing tags are in separate routes.
+8. Adjusted the API spec for consistency.
+9. Since the user can edit any field, `RETURNING *` must be used to capture all possible edits to a field.
+10. Adjusted the API spec for consistency.
+11. Docstrings and comments have been added.
+12. All queries already use parameterized input.
+13. Combined SQL queries.
+14. Removed unused imports and commented-out code.
 ### (Srish Maulik)
 ### (Sri Bala)
 
 ## Schema/API Design Comments
 ### (Sophia Chang)
-1. Added commnents.
+1. Added comments.
 2. Reversed ID in URL
 3. Changed to return consistent `OK` responses and added more descriptive messages. 
 4. Added a logout function.
@@ -46,5 +60,6 @@ All tests work as intended/no errors found.
 1. Though a fun suggestion, this API is not intended to be gamified. Rather, it's moreso meant to be a practical tool used for organizing tasks. However, the idea of the user having/setting a goal and checking it off sounds like a good feature. Will consider this as a feature for the complex endpoint.
 2. This idea sounds interesting. Incorporating shared tasks between users could be useful in the case that a group/team is using the API. Something that we'd have to consider in implementing this would be handling concurrency issues, such as when two users update a task at the same time. Additionally, this can be expanded to allow users to create groups/organizations where they can invite other users to join/work on shared tasks.
 ### (Emanuel Gonzalez)
+
 ### (Srish Maulik)
 ### (Sri Bala)
