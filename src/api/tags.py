@@ -3,7 +3,6 @@ from src.api import auth
 from src import database as db
 import sqlalchemy
 from pydantic import BaseModel
-from datetime import datetime
 
 router = APIRouter(
     prefix="/tags",
@@ -18,7 +17,6 @@ class Tag(BaseModel):
 def add_tag(user_id: int, task_id: int, tag: Tag):
     
     with db.engine.begin() as connection:
-
         # Check if task_id exists
         exists = connection.execute(sqlalchemy.text(
             """
@@ -103,9 +101,8 @@ def remove_tag(user_id: int, task_id: int, tags: Tags):
 
         if exists is None:
             return "ERROR: task_id not found"
-        print(f"tags: {tags.names}")
         
-        connection.execute(sqlalchemy.text(
+        deleted = connection.execute(sqlalchemy.text(
             """
             DELETE FROM tags
             WHERE task_id = :task_id AND user_id = :user_id
@@ -113,5 +110,7 @@ def remove_tag(user_id: int, task_id: int, tags: Tags):
             """
             ), [{"task_id": task_id, "user_id": user_id, "names": tuple(tags.names)}])
         
-    return "OK"
+        if deleted.rowcount <= 0:
+            return "ERROR: Could not delete, tag not found."
         
+    return "OK: Tag successfully removed"

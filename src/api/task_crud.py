@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from src.api import auth
 from src import database as db
 import sqlalchemy
@@ -22,9 +22,9 @@ class Task(BaseModel):
     due_date: datetime = None
     end_date: datetime = None
 
+# User input validation
 def priorityIsValid (priority: str):
     return priority is None or priority.lower() in ["high", "medium", "low"]
-           
 def statusIsValid (status: str):
     return status is None or status.lower() in ["complete", "in progress", "not started"]
 
@@ -38,6 +38,11 @@ def create_task(user_id: int, task: Task):
         return "ERROR: status field must match one of the following: 'complete', 'in progress', or 'not started'"
     
     with db.engine.begin() as connection:
+
+        # Ensure task has a name
+        if task.name == None:
+            return "ERROR: Task must have name"
+
         task_id = connection.execute(sqlalchemy.text(
             """
             INSERT INTO tasks (user_id, name, description, priority, status, start_date, due_date, end_date)
@@ -110,7 +115,7 @@ def update_task(user_id: int, task_id: int, task: Task):
              "start_date": task.start_date, "due_date": task.due_date, "end_date": task.end_date}])
         
         if result.rowcount > 0:
-            return "OK"
+            return "OK: Task successfully updated"
 
     return "ERROR: Task not found"
 
@@ -119,16 +124,40 @@ def update_task(user_id: int, task_id: int, task: Task):
 def delete_task(user_id: int, task_id: int):
 
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text(
-            """
-            DELETE FROM tasks
-            WHERE task_id = :task_id AND user_id = :user_id
-            RETURNING *
-            """
-        ), [{"task_id": task_id, "user_id": user_id}])
+        # Delete the task
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                DELETE FROM tasks
+                WHERE task_id = :task_id AND user_id = :user_id
+                RETURNING task_id
+                """
+            ), [{"task_id": task_id, "user_id": user_id}]
+        )
 
-        # check if a task was deleted
-        if result.rowcount > 0:
-            return "OK"
-    
-    return "ERROR: Task not found"
+        if result.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Task not found")
+
+        # Find tags that are no longer used by any tasks
+        unused_tags = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT t.name FROM tags t
+                LEFT JOIN tasks_tags tt ON t.tag_id = tt.tag_id
+                WHERE tt.task_id IS NULL
+                """
+            )
+        ).fetchall()
+
+        # Delete unused tags
+        if unused_tags:
+            connection.execute(
+                sqlalchemy.text(
+                    """
+                    DELETE FROM tags
+                    WHERE name IN :unused_tags
+                    """
+                ), {"unused_tags": tuple(tag.name for tag in unused_tags)}
+            )
+
+    return {"detail": "Task and associated unused tags successfully deleted"}

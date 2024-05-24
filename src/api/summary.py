@@ -2,8 +2,6 @@ from fastapi import APIRouter, Depends
 from src.api import auth
 from src import database as db
 import sqlalchemy
-from pydantic import BaseModel
-from datetime import datetime
 
 router = APIRouter(
     prefix="/summary",
@@ -13,9 +11,10 @@ router = APIRouter(
 
 @router.post("")
 def summary(user_id: int):
+
     
+    # Fetch summary info from db
     with db.engine.begin() as connection:
-        
         # there is probably a better way to do this
         result = connection.execute(sqlalchemy.text(
             """
