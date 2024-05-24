@@ -4,7 +4,6 @@ from src import database as db
 import sqlalchemy
 from pydantic import BaseModel
 from datetime import datetime
-import src.api.user as user
 
 router = APIRouter(
     prefix="/summary",
@@ -13,10 +12,7 @@ router = APIRouter(
 )
 
 @router.post("")
-def summary():
-
-    if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+def summary(user_id: int):
     
     with db.engine.begin() as connection:
         
@@ -44,7 +40,7 @@ def summary():
             LEFT JOIN status_counts AS s2 ON s2.status LIKE 'in progress'
             LEFT JOIN status_counts AS s3 ON s3.status LIKE 'not started'
             """
-            ), [{"user_id": user.login_id}]).one()
+            ), [{"user_id": user_id}]).one()
     
     return  {
                 "number_of_tasks": result.total,

@@ -5,7 +5,6 @@ import sqlalchemy
 from sqlalchemy import create_engine, Table, MetaData
 from pydantic import BaseModel
 from enum import Enum
-import src.api.user as user
 import os
 
 router = APIRouter(
@@ -33,17 +32,14 @@ metadata = MetaData()
 tasks = Table('tasks', metadata, autoload_with=engine)
 
 @router.get("/")
-def sort(sort_col: sort_options = sort_options.due_date,
-                sort_order: sort_order = sort_order.desc):
+def sort(user_id: int,
+         sort_col: sort_options = sort_options.due_date,
+         sort_order: sort_order = sort_order.desc):
     """
     sort_col = which columns to sort by
     sort_order = direction of sort
     Default = sort by due_date in descending order
     """
-    
-    # Check for valid user
-    if user.login_id < 0:
-        return "ERROR: Invalid login ID"
 
     # TODO: change sorting of priority and status from being alphabetic 
 
@@ -80,7 +76,7 @@ def sort(sort_col: sort_options = sort_options.due_date,
             tasks.c.end_date
         )
         .select_from(tasks)
-        .where(tasks.c.user_id == user.login_id)
+        .where(tasks.c.user_id == user_id)
         .order_by(order_by, order_by_col)
     )
 
@@ -108,11 +104,7 @@ def sort(sort_col: sort_options = sort_options.due_date,
 tags_table = Table('tags', metadata, autoload_with=engine)
 
 @router.get("/tags")
-def sort_by_tags(tag: str):
-    
-    # Check for valid user
-    if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+def sort_by_tags(user_id: int, tag: str):
 
     # Logic: Query all tasks that have the given tag, append them first
     #        to the json object. Then append the rest of the tasks that
@@ -133,7 +125,7 @@ def sort_by_tags(tag: str):
         )
         .select_from(tasks)
         .join(tags_table, tasks.c.task_id == tags_table.c.task_id)
-        .where(tasks.c.user_id == user.login_id)
+        .where(tasks.c.user_id == user_id)
         .where(tags_table.c.name == tag)
     )
 
@@ -154,7 +146,7 @@ def sort_by_tags(tag: str):
         .distinct(tasks.c.task_id)
         .select_from(tasks)
         .outerjoin(tags_table, tasks.c.task_id == tags_table.c.task_id)
-        .where(tasks.c.user_id == user.login_id)
+        .where(tasks.c.user_id == user_id)
         .where(sqlalchemy.not_(tags_table.c.name == tag))
     )
 

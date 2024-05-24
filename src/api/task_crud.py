@@ -4,7 +4,6 @@ from src import database as db
 import sqlalchemy
 from pydantic import BaseModel
 from datetime import datetime
-import src.api.user as user
 
 router = APIRouter(
     prefix="/crud",
@@ -30,10 +29,7 @@ def statusIsValid (status: str):
     return status is None or status.lower() in ["complete", "in progress", "not started"]
 
 @router.post("/create")
-def create_task(task: Task):
-
-    if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+def create_task(user_id: int, task: Task):
 
     if not priorityIsValid(task.priority):
         return "ERROR: priority field must match one of the following: 'high', 'medium', or 'low'"
@@ -49,17 +45,14 @@ def create_task(task: Task):
             (:user_id, :name, :description, :priority, :status, :start_date, :due_date, :end_date)
             RETURNING task_id
             """
-            ), [{"user_id": user.login_id, "name": task.name, "description": task.description, "priority": task.priority,
+            ), [{"user_id": user_id, "name": task.name, "description": task.description, "priority": task.priority,
                 "status": task.status, "start_date": task.start_date, "due_date": task.due_date,
                 "end_date": task.end_date}]).one().task_id
     
     return {"task_id": task_id}
 
-@router.post("/read/{task_id}")
-def read_task(task_id: int):
-
-    if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+@router.post("/read")
+def read_task(user_id: int, task_id: int):
 
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text(
@@ -68,7 +61,7 @@ def read_task(task_id: int):
             FROM tasks
             WHERE task_id = :task_id AND user_id = :user_id
             """
-        ), [{"task_id": task_id, "user_id": user.login_id}])
+        ), [{"task_id": task_id, "user_id": user_id}])
 
         # check if task id in table
         task = {}
@@ -86,10 +79,10 @@ def read_task(task_id: int):
 
     return task
 
-@router.post("/update/{task_id}")
-def update_task(task_id: int, task: Task):
+@router.post("/update")
+def update_task(user_id: int, task_id: int, task: Task):
 
-    if user.login_id < 0:
+    if user_id < 0:
         return "ERROR: Invalid login ID"
 
     if not priorityIsValid(task.priority):
@@ -112,7 +105,7 @@ def update_task(task_id: int, task: Task):
             WHERE task_id = :task_id AND user_id = :user_id
             RETURNING *
             """
-        ), [{"task_id": task_id, "user_id": user.login_id, "name": task.name, 
+        ), [{"task_id": task_id, "user_id": user_id, "name": task.name, 
              "description": task.description, "priority": task.priority, "status": task.status, 
              "start_date": task.start_date, "due_date": task.due_date, "end_date": task.end_date}])
         
@@ -122,11 +115,8 @@ def update_task(task_id: int, task: Task):
     return "ERROR: Task not found"
 
 
-@router.post("/delete/{task_id}")
-def delete_task(task_id: int):
-
-    if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+@router.post("/delete")
+def delete_task(user_id: int, task_id: int):
 
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text(
@@ -135,7 +125,7 @@ def delete_task(task_id: int):
             WHERE task_id = :task_id AND user_id = :user_id
             RETURNING *
             """
-        ), [{"task_id": task_id, "user_id": user.login_id}])
+        ), [{"task_id": task_id, "user_id": user_id}])
 
         # check if a task was deleted
         if result.rowcount > 0:
