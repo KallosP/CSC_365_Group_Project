@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from src.api import auth
 from src import database as db
 import sqlalchemy
@@ -129,21 +129,44 @@ def update_task(task_id: int, task: Task):
 
 @router.post("/delete/{task_id}")
 def delete_task(task_id: int):
-
     if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+        raise HTTPException(status_code=400, detail="Invalid login ID")
 
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text(
-            """
-            DELETE FROM tasks
-            WHERE task_id = :task_id AND user_id = :user_id
-            RETURNING *
-            """
-        ), [{"task_id": task_id, "user_id": user.login_id}])
+        # Delete the task
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                DELETE FROM tasks
+                WHERE task_id = :task_id AND user_id = :user_id
+                RETURNING task_id
+                """
+            ), {"task_id": task_id, "user_id": user.login_id}
+        )
 
-        # check if a task was deleted
-        if result.rowcount > 0:
-            return "OK: Task successfully deleted"
-    
-    return "ERROR: Task not found"
+        if result.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Task not found")
+
+        # Find tags that are no longer used by any tasks
+        unused_tags = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT t.name FROM tags t
+                LEFT JOIN tasks_tags tt ON t.tag_id = tt.tag_id
+                WHERE tt.task_id IS NULL
+                """
+            )
+        ).fetchall()
+
+        # Delete unused tags
+        if unused_tags:
+            connection.execute(
+                sqlalchemy.text(
+                    """
+                    DELETE FROM tags
+                    WHERE name IN :unused_tags
+                    """
+                ), {"unused_tags": tuple(tag.name for tag in unused_tags)}
+            )
+
+    return {"detail": "Task and associated unused tags successfully deleted"}

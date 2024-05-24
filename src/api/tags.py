@@ -55,7 +55,7 @@ def add_tag(task_id: int, tag: Tag):
     
     return "OK: Tag added successfully"
 
-@router.post("{task_id}")
+@router.post("/{task_id}")
 def get_tags(task_id: int):
     if user.login_id < 0:
         return "ERROR: Invalid login ID"

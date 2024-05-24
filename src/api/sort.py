@@ -29,7 +29,7 @@ metadata = MetaData()
 
 tasks = Table('tasks', metadata, autoload_with=engine)
 
-@router.get("/")
+@router.get("")
 def sort(sort_col: sort_options = sort_options.due_date,
                 sort_order: sort_order = sort_order.desc):
     """
