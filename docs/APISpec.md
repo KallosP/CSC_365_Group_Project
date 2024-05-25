@@ -252,8 +252,8 @@ Creating an account also logs the user in.
 ```
 
 ## 6. Scheduler
-### 6.1 Suggest - `/scheduler/suggest/{user_id}` (POST)
-Suggests the order in which all the user's tasks should be done. Based on tasks' due date, priority, estimated amount of time to complete, and user availability.
+### 6.1 Suggest - `/scheduler/suggest/{user_id}` (GET)
+Suggests the order in which all the user's tasks should be done. Based on tasks' due date, priority, and user availability.
 **Request**:
 ```json
 {
@@ -271,11 +271,29 @@ Suggests the order in which all the user's tasks should be done. Based on tasks'
     "status": "string",        /* "complete", "not started", "in progress" */
     "start_date": "timestamp", /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
     "due_date": "timestamp",   /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
-    "end_date": "timestamp"    /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
-
+    "end_date": "timestamp",    /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
+    "weight": "number"         /* The task's overall score to be completed. Higher = complete sooner */
     },
     {
         ...
     }
 ] 
+```
+### 6.2 Availability - `/scheduler/set_free_time/{user_id}` (POST)
+Records time ranges that tasks can be worked on.
+**Request**:
+```json
+{
+  "free_time": [
+    [
+      "HH:MM", /* 24-hour clock format. Must be a list of tuples, representing a list of time ranges. */
+      "HH:MM"
+    ],
+    ...
+  ]
+}
+```
+**Response**:
+```json
+"Successfully stored free time"
 ```
