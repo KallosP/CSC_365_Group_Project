@@ -251,3 +251,31 @@ Creating an account also logs the user in.
 }
 ```
 
+## 6. Scheduler
+### 6.1 Suggest - `/scheduler/suggest/{user_id}` (POST)
+Suggests the order in which all the user's tasks should be done. Based on tasks' due date, priority, estimated amount of time to complete, and user availability.
+**Request**:
+```json
+{
+  "user_id": "number",
+}
+```
+ **Response**:
+```json
+[
+
+    {
+    "name": "string",
+    "description": "string",
+    "priority": "string",      /* "high", "medium", or "low" */
+    "status": "string",        /* "complete", "not started", "in progress" */
+    "start_date": "timestamp", /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
+    "due_date": "timestamp",   /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
+    "end_date": "timestamp"    /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
+
+    },
+    {
+        ...
+    }
+] 
+```

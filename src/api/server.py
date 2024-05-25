@@ -1,7 +1,7 @@
 from fastapi import FastAPI, exceptions
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
-from src.api import task_crud, user, sort, tags, summary, analytics
+from src.api import task_crud, user, sort, tags, summary, analytics, scheduler
 import json
 import logging
 from starlette.middleware.cors import CORSMiddleware
@@ -31,6 +31,7 @@ app.include_router(sort.router)
 app.include_router(tags.router)
 app.include_router(summary.router)
 app.include_router(analytics.router)
+app.include_router(scheduler.router)
 
 # Handle server errors
 @app.exception_handler(exceptions.RequestValidationError)
