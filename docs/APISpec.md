@@ -15,7 +15,8 @@ Create a new task.
     "status": "string",        /* optional, "complete", "not started", "in progress" */
     "start_date": "timestamp", /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
     "due_date": "timestamp",   /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
-    "end_date": "timestamp"    /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+    "end_date": "timestamp",   /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+    "estimated_time": "number" /* optional, estimated time to complete task (in hours) */
 }
 ```
 
@@ -253,7 +254,7 @@ Creating an account also logs the user in.
 
 ## 6. Scheduler
 ### 6.1 Suggest - `/scheduler/suggest/{user_id}` (GET)
-Suggests the order in which all the user's tasks should be done. Based on tasks' due date, priority, and user availability.
+Suggests the order in which all the user's tasks should be completed. Based on tasks' due date, priority, and user availability.
 **Request**:
 ```json
 {
@@ -262,22 +263,26 @@ Suggests the order in which all the user's tasks should be done. Based on tasks'
 ```
  **Response**:
 ```json
-[
-
+{
+  "Suggested completion order": [
     {
-    "name": "string",
-    "description": "string",
-    "priority": "string",      /* "high", "medium", or "low" */
-    "status": "string",        /* "complete", "not started", "in progress" */
-    "start_date": "timestamp", /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
-    "due_date": "timestamp",   /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
-    "end_date": "timestamp",    /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
-    "weight": "number"         /* The task's overall score to be completed. Higher = complete sooner */
+      "task_id": "number",
+      "name": "string",
+      "priority": "string",
+      "due_date": "timestamp",
+      "estimated_time": "number",
+      "weight": "number",
+      "day": "number",
+      "free_time_range": [
+        "time",
+        "time"
+      ]
     },
     {
-        ...
+      ...
     }
-] 
+  ]
+} 
 ```
 ### 6.2 Availability - `/scheduler/set_free_time/{user_id}` (POST)
 Records time ranges that tasks can be worked on.

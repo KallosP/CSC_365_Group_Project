@@ -22,6 +22,7 @@ class Task(BaseModel):
     start_date: datetime = None
     due_date: datetime = None
     end_date: datetime = None
+    estimated_time: int = None
 
 # User input validation
 def priorityIsValid (priority: str):
@@ -49,14 +50,14 @@ def create_task(task: Task):
 
         task_id = connection.execute(sqlalchemy.text(
             """
-            INSERT INTO tasks (user_id, name, description, priority, status, start_date, due_date, end_date)
+            INSERT INTO tasks (user_id, name, description, priority, status, start_date, due_date, end_date, estimated_time)
             VALUES
-            (:user_id, :name, :description, :priority, :status, :start_date, :due_date, :end_date)
+            (:user_id, :name, :description, :priority, :status, :start_date, :due_date, :end_date, :estimated_time)
             RETURNING task_id
             """
             ), [{"user_id": user.login_id, "name": task.name, "description": task.description, "priority": task.priority,
                 "status": task.status, "start_date": task.start_date, "due_date": task.due_date,
-                "end_date": task.end_date}]).one().task_id
+                "end_date": task.end_date, "estimated_time": task.estimated_time}]).one().task_id
     
     return {"task_id": task_id}
 
@@ -69,7 +70,7 @@ def read_task(task_id: int):
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text(
             """
-            SELECT name, description, priority, status, start_date, due_date, end_date
+            SELECT name, description, priority, status, start_date, due_date, end_date, estimated_time
             FROM tasks
             WHERE task_id = :task_id AND user_id = :user_id
             """
@@ -86,7 +87,8 @@ def read_task(task_id: int):
                 "status": row.status,
                 "start_date": row.start_date,
                 "due_date": row.due_date,
-                "end_date": row.end_date
+                "end_date": row.end_date,
+                "estimated_time": row.estimated_time
             }
 
     return task
@@ -113,13 +115,15 @@ def update_task(task_id: int, task: Task):
             status = COALESCE(:status, status),
             start_date = COALESCE(:start_date, start_date),
             due_date = COALESCE(:due_date, due_date),
-            end_date = COALESCE(:end_date, end_date)
+            end_date = COALESCE(:end_date, end_date),
+            estimated_time = COALESCE(:estimated_time, estimated_time)
             WHERE task_id = :task_id AND user_id = :user_id
             RETURNING *
             """
         ), [{"task_id": task_id, "user_id": user.login_id, "name": task.name, 
              "description": task.description, "priority": task.priority, "status": task.status, 
-             "start_date": task.start_date, "due_date": task.due_date, "end_date": task.end_date}])
+             "start_date": task.start_date, "due_date": task.due_date, "end_date": task.end_date,
+             "estimated_time": task.estimated_time}])
         
         if result.rowcount > 0:
             return "OK: Task successfully updated"
