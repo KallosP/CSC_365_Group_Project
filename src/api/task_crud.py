@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from src.api import auth
 from src import database as db
 import sqlalchemy
@@ -129,44 +129,29 @@ def update_task(task_id: int, task: Task):
 
 @router.post("/delete/{task_id}")
 def delete_task(task_id: int):
+
     if user.login_id < 0:
-        raise HTTPException(status_code=400, detail="Invalid login ID")
+        return "ERROR: Invalid login ID"
 
     with db.engine.begin() as connection:
-        # Delete the task
-        result = connection.execute(
-            sqlalchemy.text(
-                """
-                DELETE FROM tasks
-                WHERE task_id = :task_id AND user_id = :user_id
-                RETURNING task_id
-                """
-            ), {"task_id": task_id, "user_id": user.login_id}
-        )
+        result = connection.execute(sqlalchemy.text(
+            """
+            DELETE FROM tasks
+            WHERE task_id = :task_id AND user_id = :user_id
+            RETURNING *
+            """
+        ), [{"task_id": task_id, "user_id": user.login_id}])
 
-        if result.rowcount == 0:
-            raise HTTPException(status_code=404, detail="Task not found")
-
-        # Find tags that are no longer used by any tasks
-        unused_tags = connection.execute(
-            sqlalchemy.text(
+        # check if a task was deleted
+        if result.rowcount > 0:
+            #delete associated tags
+            connection.execute(sqlalchemy.text(
                 """
-                SELECT t.name FROM tags t
-                LEFT JOIN tasks_tags tt ON t.tag_id = tt.tag_id
-                WHERE tt.task_id IS NULL
+                DELETE FROM tags
+                WHERE task_id = :task_id
                 """
-            )
-        ).fetchall()
+            ), {"task_id": task_id})
 
-        # Delete unused tags
-        if unused_tags:
-            connection.execute(
-                sqlalchemy.text(
-                    """
-                    DELETE FROM tags
-                    WHERE name IN :unused_tags
-                    """
-                ), {"unused_tags": tuple(tag.name for tag in unused_tags)}
-            )
-
-    return {"detail": "Task and associated unused tags successfully deleted"}
+            return {"message": "OK: Task and associated tags successfully deleted"}
+    
+    return "ERROR: Task not found"
