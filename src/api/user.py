@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from src.api import auth
 from src import database as db
 import sqlalchemy
@@ -31,11 +31,11 @@ def create_user(user: User):
             ), [{"user_name": user.user_name, "password": user.password}])
         
         if result.rowcount > 0:
-            login_id = result.one().user_id
+            user_id = result.one().user_id
         else:
-            return "ERROR: Username already exists"
+            raise HTTPException(status_code=409, detail="Username already exists")
 
-    return {"user_id": login_id}
+    return {"user_id": user_id}
 
 @router.post("/get_user_id")
 def get_user_id(user: User):
@@ -53,6 +53,7 @@ def get_user_id(user: User):
         if result.rowcount > 0:
             user_id = result.one().user_id
         else:
-            return "ERROR: Incorrect username or password"
+            raise HTTPException(status_code=401, detail="Incorrect username or password")
 
-    return user_id
+    return {"user_id": user_id}
+

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, exceptions
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
-from src.api import task_crud, user, sort, tags, summary, analytics, scheduler
+from src.api import task, user, sort, tags, summary, analytics, scheduler
 import json
 import logging
 from starlette.middleware.cors import CORSMiddleware
@@ -25,7 +25,7 @@ app.add_middleware(
 )
 
 # NOTE: This is where endpoints are added
-app.include_router(task_crud.router)
+app.include_router(task.router)
 app.include_router(user.router)
 app.include_router(summary.router)
 app.include_router(sort.router)

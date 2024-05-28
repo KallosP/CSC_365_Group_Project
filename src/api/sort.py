@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from src.api import auth
 from src import database as db
 import sqlalchemy
@@ -80,9 +80,9 @@ def sort(user_id: int,
     # Execute the query
     with db.engine.connect() as conn:
         result = conn.execute(stmt)
-        json = []
+        tasks_list  = []
         for row in result:
-            json.append(
+            tasks_list .append(
                 {
                     "task_id": row.task_id,
                     "name": row.name,
@@ -96,7 +96,7 @@ def sort(user_id: int,
             )
 
 
-    return json
+    return tasks_list 
 
 tags_table = Table('tags', metadata, autoload_with=engine)
 

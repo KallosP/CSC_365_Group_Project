@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from src.api import auth
 from src import database as db
 import sqlalchemy
@@ -27,7 +27,7 @@ def add_tag(user_id: int, task_id: int, tag: Tag):
             ), [{"task_id": task_id, "user_id": user_id}]).fetchone()
 
         if exists is None:
-            return "ERROR: task_id not found"
+            raise HTTPException(status_code=404, detail="task_id not found")
         
         # Check if we already have a tag of the same name for a given task
         tag_exists = connection.execute(sqlalchemy.text(
@@ -39,7 +39,7 @@ def add_tag(user_id: int, task_id: int, tag: Tag):
             ), [{"task_id": task_id, "user_id": user_id, "tag": tag.name}]).fetchone()
         
         if tag_exists:
-            return "ERROR: tag already exists for task"
+            raise HTTPException(status_code=409, detail="Tag already exists for task")
 
         connection.execute(sqlalchemy.text(
             """
@@ -64,9 +64,9 @@ def get_tags(user_id: int, task_id: int):
             WHERE task_id = :task_id AND user_id = :user_id
             """
             ), [{"task_id": task_id, "user_id": user_id}]).fetchone()
-
+        
         if exists is None:
-            return "ERROR: task_id not found"
+            raise HTTPException(status_code=404, detail="task_id not found")
         
         tags = connection.execute(sqlalchemy.text(
             """
@@ -79,7 +79,9 @@ def get_tags(user_id: int, task_id: int):
         result = []
         for tag in tags:
             result.append(tag[0])
-        return result
+        return {
+                "tags": result
+                }
     
 class Tags(BaseModel):
     names: list[str] = None
@@ -100,7 +102,7 @@ def remove_tag(user_id: int, task_id: int, tags: Tags):
             ), [{"task_id": task_id, "user_id": user_id}]).fetchone()
 
         if exists is None:
-            return "ERROR: task_id not found"
+            raise HTTPException(status_code=404, detail="task_id not found")
         
         deleted = connection.execute(sqlalchemy.text(
             """
@@ -111,6 +113,6 @@ def remove_tag(user_id: int, task_id: int, tags: Tags):
             ), [{"task_id": task_id, "user_id": user_id, "names": tuple(tags.names)}])
         
         if deleted.rowcount <= 0:
-            return "ERROR: Could not delete, tag not found."
+            raise HTTPException(status_code=404, detail="Could not delete, tag not found.")
         
     return "OK: Tag successfully removed"
