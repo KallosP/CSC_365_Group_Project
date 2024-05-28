@@ -45,15 +45,6 @@ def suggest(user_id: int):
         WHERE user_id = :user_id
         """), [{"user_id": user_id}])
 
-        # Insert the subtask into the subtasks table
-        connection.execute(sqlalchemy.text(
-            """
-            INSERT INTO tags (user_id, task_id, name)
-            VALUES
-            (:user_id, :task_id, :name)
-            """
-            ), [{"user_id": 8, "task_id": 46, "name": "TEST"}])
-
         # Get the user's availability (free time windows)
         result = connection.execute(sqlalchemy.text(
             """
