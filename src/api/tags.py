@@ -83,7 +83,9 @@ def get_tags(task_id: int):
         result = []
         for tag in tags:
             result.append(tag[0])
-        return result
+        return {
+                "tags": result
+                }
     
 class Tags(BaseModel):
     names: list[str] = None
