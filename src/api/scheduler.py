@@ -194,12 +194,32 @@ def suggest(user_id: int, free_time: FreeTime):
 
     # Update DB
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text(
-            """
-            UPDATE users
-            SET free_time = :free_time
-            WHERE user_id = :user_id
-            """
-            ), [{"free_time": free_time_list, "user_id": user_id}])
+        try:
+            # Explicitly lock user 
+            connection.execute(sqlalchemy.text(
+                """
+                SELECT *
+                FROM users
+                WHERE user_id = :user_id
+                FOR UPDATE
+                """
+            ), {"user_id": user_id}).fetchone()
 
-    return "Successfully stored free time"
+            # Update user's free time while locked
+            connection.execute(sqlalchemy.text(
+                """
+                UPDATE users
+                SET free_time = :free_time
+                WHERE user_id = :user_id
+                """
+                ), [{"free_time": free_time_list, "user_id": user_id}])
+            
+            # Commit transaction/release lock
+            connection.commit()
+
+            return "Successfully stored free time"
+        
+        except Exception as e:
+            # Rollback transaction on error
+            connection.rollback()
+            return f"Error: {e}"
