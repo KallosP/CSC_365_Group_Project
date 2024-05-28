@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from src.api import auth
 from src import database as db
 import sqlalchemy
@@ -15,7 +15,7 @@ def summary():
 
     # Validate user
     if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+        raise HTTPException(status_code=400, detail="Invalid login ID")
     
     # Fetch summary info from db
     with db.engine.begin() as connection:

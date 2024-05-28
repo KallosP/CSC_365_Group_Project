@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from src.api import auth
 from src import database as db
 import sqlalchemy
@@ -18,7 +18,7 @@ class Tag(BaseModel):
 def add_tag(task_id: int, tag: Tag):
     # Validate user
     if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+        raise HTTPException(status_code=400, detail="Invalid login ID")
     
     with db.engine.begin() as connection:
         # Check if task_id exists
@@ -31,7 +31,7 @@ def add_tag(task_id: int, tag: Tag):
             ), [{"task_id": task_id}]).fetchone()
 
         if exists == None:
-            return "ERROR: task_id not found"
+            raise HTTPException(status_code=404, detail="task_id not found")
         
         # Check if we already have a tag of the same name for a given task
         tag_exists = connection.execute(sqlalchemy.text(
@@ -43,7 +43,7 @@ def add_tag(task_id: int, tag: Tag):
             ), [{"task_id": task_id, "tag": tag.name}]).fetchone()
         
         if tag_exists:
-            return "ERROR: tag already exists for task"
+            raise HTTPException(status_code=409, detail="Tag already exists for task")
 
         connection.execute(sqlalchemy.text(
             """
@@ -55,10 +55,10 @@ def add_tag(task_id: int, tag: Tag):
     
     return "OK: Tag added successfully"
 
-@router.post("/{task_id}")
+@router.get("/{task_id}")
 def get_tags(task_id: int):
     if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+        raise HTTPException(status_code=400, detail="Invalid login ID")
     with db.engine.begin() as connection:
 
         # Check if task_id exists
@@ -71,7 +71,7 @@ def get_tags(task_id: int):
             ), [{"task_id": task_id}]).fetchone()
 
         if exists == None:
-            return "ERROR: task_id not found"
+            raise HTTPException(status_code=404, detail="task_id not found")
         
         tags = connection.execute(sqlalchemy.text(
             """
@@ -92,7 +92,7 @@ class Tags(BaseModel):
 @router.post("/remove/{task_id}")
 def remove_tag(task_id: int, tags: Tags):
     if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+        raise HTTPException(status_code=400, detail="Invalid login ID")
     with db.engine.begin() as connection:
 
         # Check if task_id exists
@@ -105,7 +105,7 @@ def remove_tag(task_id: int, tags: Tags):
             ), [{"task_id": task_id}]).fetchone()
 
         if exists == None:
-            return "ERROR: task_id not found"
+            raise HTTPException(status_code=404, detail="task_id not found")
         
         deleted = connection.execute(sqlalchemy.text(
             """
@@ -116,7 +116,7 @@ def remove_tag(task_id: int, tags: Tags):
             ), [{"task_id": task_id, "names": tuple(tags.names)}])
         
         if deleted.rowcount <= 0:
-            return "ERROR: Could not delete, tag not found."
+            raise HTTPException(status_code=404, detail="Could not delete, tag not found.")
         
     return "OK: Tag successfully removed"
         

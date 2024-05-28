@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from src.api import auth
 from src import database as db
 import sqlalchemy
@@ -40,7 +40,7 @@ def sort(sort_col: sort_options = sort_options.due_date,
     
     # Check for valid user
     if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+        raise HTTPException(status_code=400, detail="Invalid login ID")
 
     # TODO: change sorting of priority and status from being alphabetic 
 
@@ -84,9 +84,9 @@ def sort(sort_col: sort_options = sort_options.due_date,
     # Execute the query
     with db.engine.connect() as conn:
         result = conn.execute(stmt)
-        json = []
+        tasks_list  = []
         for row in result:
-            json.append(
+            tasks_list .append(
                 {
                     "task_id": row.task_id,
                     "name": row.name,
@@ -100,7 +100,7 @@ def sort(sort_col: sort_options = sort_options.due_date,
             )
 
 
-    return json
+    return tasks_list 
 
 tags_table = Table('tags', metadata, autoload_with=engine)
 
@@ -109,7 +109,7 @@ def sort_by_tags(tag: str):
     
     # Check for valid user
     if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+        raise HTTPException(status_code=400, detail="Invalid login ID")
 
     # Logic: Query all tasks that have the given tag, append them first
     #        to the json object. Then append the rest of the tasks that

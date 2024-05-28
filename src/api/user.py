@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from src.api import auth
 from src import database as db
 import sqlalchemy
@@ -37,7 +37,7 @@ def create_user(user: User):
             login_id = result.one().user_id
         else:
             login_id = -1
-            return "ERROR: Username already exists"
+            raise HTTPException(status_code=409, detail="Username already exists")
 
     return {"user_id": login_id}
 
@@ -59,7 +59,7 @@ def login(user: User):
             login_id = result.one().user_id
         else:
             login_id = -1
-            return "ERROR: Incorrect username or password"
+            raise HTTPException(status_code=401, detail="Incorrect username or password")
 
     return "OK: Successfully logged in"
 
@@ -68,7 +68,7 @@ def logout():
 
     global login_id
     if login_id == -1:
-        return "ERROR: Not logged in"
+        return "OK: Already logged out"
     else:
         login_id = -1
         return "OK: Successfully logged out"
