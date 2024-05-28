@@ -22,39 +22,42 @@ def add_tag(user_id: int, task_id: int, tag: Tag):
     """
     
     with db.engine.begin() as connection:
-        # Check if task_id exists
+        # Check if task_id exists and lock it
         exists = connection.execute(sqlalchemy.text(
             """
             SELECT task_id
             FROM tasks
             WHERE task_id = :task_id AND user_id = :user_id
+            FOR UPDATE
             """
-            ), [{"task_id": task_id, "user_id": user_id}]).fetchone()
+            ), {"task_id": task_id, "user_id": user_id}).fetchone()
 
         if exists is None:
             raise HTTPException(status_code=404, detail="Task not found for user")
         
-        # Check if we already have a tag of the same name for a given task
+        # Check if we already have a tag of the same name for a given task and lock existing tags
         tag_exists = connection.execute(sqlalchemy.text(
             """
             SELECT tag_id
             FROM tags
             WHERE task_id = :task_id AND user_id = :user_id AND name = :tag
+            FOR UPDATE
             """
-            ), [{"task_id": task_id, "user_id": user_id, "tag": tag.name}]).fetchone()
+            ), {"task_id": task_id, "user_id": user_id, "tag": tag.name}).fetchone()
         
         if tag_exists:
             raise HTTPException(status_code=409, detail="Tag already exists for task")
 
+        # Insert the new tag
         connection.execute(sqlalchemy.text(
             """
             INSERT INTO tags (user_id, task_id, name)
-            VALUES
-            (:user_id, :task_id, :name)
+            VALUES (:user_id, :task_id, :name)
             """
-            ), [{"task_id": task_id, "user_id": user_id, "name": tag.name}])
+            ), {"task_id": task_id, "user_id": user_id, "name": tag.name})
     
     return "OK"
+
 
 @router.get("/get")
 def get_tags(user_id: int, task_id: int):
