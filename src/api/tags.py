@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from src.api import auth
 from src import database as db
 import sqlalchemy
 from pydantic import BaseModel
-import src.api.user as user
 
 router = APIRouter(
     prefix="/tags",
@@ -14,11 +13,8 @@ router = APIRouter(
 class Tag(BaseModel):
     name: str = None
 
-@router.post("/add/{task_id}")
-def add_tag(task_id: int, tag: Tag):
-    # Validate user
-    if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+@router.post("/add")
+def add_tag(user_id: int, task_id: int, tag: Tag):
     
     with db.engine.begin() as connection:
         # Check if task_id exists
@@ -26,24 +22,24 @@ def add_tag(task_id: int, tag: Tag):
             """
             SELECT task_id
             FROM tasks
-            WHERE task_id = :task_id
+            WHERE task_id = :task_id AND user_id = :user_id
             """
-            ), [{"task_id": task_id}]).fetchone()
+            ), [{"task_id": task_id, "user_id": user_id}]).fetchone()
 
-        if exists == None:
-            return "ERROR: task_id not found"
+        if exists is None:
+            raise HTTPException(status_code=404, detail="task_id not found")
         
         # Check if we already have a tag of the same name for a given task
         tag_exists = connection.execute(sqlalchemy.text(
             """
             SELECT tag_id
             FROM tags
-            WHERE task_id = :task_id AND name = :tag
+            WHERE task_id = :task_id AND user_id = :user_id AND name = :tag
             """
-            ), [{"task_id": task_id, "tag": tag.name}]).fetchone()
+            ), [{"task_id": task_id, "user_id": user_id, "tag": tag.name}]).fetchone()
         
         if tag_exists:
-            return "ERROR: tag already exists for task"
+            raise HTTPException(status_code=409, detail="Tag already exists for task")
 
         connection.execute(sqlalchemy.text(
             """
@@ -51,14 +47,13 @@ def add_tag(task_id: int, tag: Tag):
             VALUES
             (:user_id, :task_id, :name)
             """
-            ), [{"user_id": user.login_id, "task_id": task_id, "name": tag.name}])
+            ), [{"task_id": task_id, "user_id": user_id, "name": tag.name}])
     
-    return "OK: Tag added successfully"
+    return "OK"
 
-@router.post("/{task_id}")
-def get_tags(task_id: int):
-    if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+@router.post("/get")
+def get_tags(user_id: int, task_id: int):
+
     with db.engine.begin() as connection:
 
         # Check if task_id exists
@@ -66,33 +61,35 @@ def get_tags(task_id: int):
             """
             SELECT task_id
             FROM tasks
-            WHERE task_id = :task_id
+            WHERE task_id = :task_id AND user_id = :user_id
             """
-            ), [{"task_id": task_id}]).fetchone()
-
-        if exists == None:
-            return "ERROR: task_id not found"
+            ), [{"task_id": task_id, "user_id": user_id}]).fetchone()
+        
+        if exists is None:
+            raise HTTPException(status_code=404, detail="task_id not found")
         
         tags = connection.execute(sqlalchemy.text(
             """
             SELECT DISTINCT name
             FROM tags
-            WHERE task_id = :task_id
+            WHERE task_id = :task_id AND user_id = :user_id
             """
-            ), [{"task_id": task_id}])
+            ), [{"task_id": task_id, "user_id": user_id}])
+        
         result = []
         for tag in tags:
             result.append(tag[0])
-        return result
+        return {
+                "tags": result
+                }
     
 class Tags(BaseModel):
     names: list[str] = None
 
 
-@router.post("/remove/{task_id}")
-def remove_tag(task_id: int, tags: Tags):
-    if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+@router.post("/remove")
+def remove_tag(user_id: int, task_id: int, tags: Tags):
+
     with db.engine.begin() as connection:
 
         # Check if task_id exists
@@ -100,23 +97,22 @@ def remove_tag(task_id: int, tags: Tags):
             """
             SELECT task_id
             FROM tasks
-            WHERE task_id = :task_id
+            WHERE task_id = :task_id AND user_id = :user_id
             """
-            ), [{"task_id": task_id}]).fetchone()
+            ), [{"task_id": task_id, "user_id": user_id}]).fetchone()
 
-        if exists == None:
-            return "ERROR: task_id not found"
+        if exists is None:
+            raise HTTPException(status_code=404, detail="task_id not found")
         
         deleted = connection.execute(sqlalchemy.text(
             """
             DELETE FROM tags
-            WHERE task_id = :task_id
+            WHERE task_id = :task_id AND user_id = :user_id
             AND name IN :names
             """
-            ), [{"task_id": task_id, "names": tuple(tags.names)}])
+            ), [{"task_id": task_id, "user_id": user_id, "names": tuple(tags.names)}])
         
         if deleted.rowcount <= 0:
-            return "ERROR: Could not delete, tag not found."
+            raise HTTPException(status_code=404, detail="Could not delete, tag not found.")
         
     return "OK: Tag successfully removed"
-        

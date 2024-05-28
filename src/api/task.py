@@ -1,52 +1,46 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from src.api import auth
 from src import database as db
 import sqlalchemy
 from pydantic import BaseModel
 from datetime import datetime
-import src.api.user as user
+from enum import Enum
 
 router = APIRouter(
-    prefix="/crud",
-    tags=["crud"],
+    prefix="/task",
+    tags=["task"],
     dependencies=[Depends(auth.get_api_key)],
 )
+
+class StatusEnum(str, Enum):
+    complete = "complete"
+    in_progress = "in progress"
+    not_started = "not started"
+
+class PriorityEnum(str, Enum):
+    low = "low"
+    medium = "medium"
+    high = "high"
 
 class Task(BaseModel):
     # NOTE: All fields are optional to allow flexibility in update_task
     
     name: str = None
     description: str = None
-    priority: str = None
-    status: str = None
     start_date: datetime = None
     due_date: datetime = None
     end_date: datetime = None
     estimated_time: int = None
 
-# User input validation
-def priorityIsValid (priority: str):
-    return priority is None or priority.lower() in ["high", "medium", "low"]
-def statusIsValid (status: str):
-    return status is None or status.lower() in ["complete", "in progress", "not started"]
 
 @router.post("/create")
-def create_task(task: Task):
-
-    if user.login_id < 0:
-        return "ERROR: Invalid login ID"
-
-    if not priorityIsValid(task.priority):
-        return "ERROR: priority field must match one of the following: 'high', 'medium', or 'low'"
-
-    if not statusIsValid(task.status):
-        return "ERROR: status field must match one of the following: 'complete', 'in progress', or 'not started'"
+def create_task(user_id: int, task: Task, priority: PriorityEnum = PriorityEnum.low, status: StatusEnum = StatusEnum.not_started):
     
     with db.engine.begin() as connection:
 
         # Ensure task has a name
-        if task.name == None:
-            return "ERROR: Task must have name"
+        if task.name == None or task.name == '':
+            raise HTTPException(status_code=400, detail="Task must have a name")
 
         task_id = connection.execute(sqlalchemy.text(
             """
@@ -55,17 +49,14 @@ def create_task(task: Task):
             (:user_id, :name, :description, :priority, :status, :start_date, :due_date, :end_date, :estimated_time)
             RETURNING task_id
             """
-            ), [{"user_id": user.login_id, "name": task.name, "description": task.description, "priority": task.priority,
-                "status": task.status, "start_date": task.start_date, "due_date": task.due_date,
+            ), [{"user_id": user_id, "name": task.name, "description": task.description, "priority": priority,
+                "status": status, "start_date": task.start_date, "due_date": task.due_date,
                 "end_date": task.end_date, "estimated_time": task.estimated_time}]).one().task_id
     
     return {"task_id": task_id}
 
-@router.post("/read/{task_id}")
-def read_task(task_id: int):
-
-    if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+@router.post("/read")
+def read_task(user_id: int, task_id: int):
 
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text(
@@ -74,7 +65,7 @@ def read_task(task_id: int):
             FROM tasks
             WHERE task_id = :task_id AND user_id = :user_id
             """
-        ), [{"task_id": task_id, "user_id": user.login_id}])
+        ), [{"task_id": task_id, "user_id": user_id}])
 
         # check if task id in table
         task = {}
@@ -93,17 +84,9 @@ def read_task(task_id: int):
 
     return task
 
-@router.post("/update/{task_id}")
-def update_task(task_id: int, task: Task):
 
-    if user.login_id < 0:
-        return "ERROR: Invalid login ID"
-
-    if not priorityIsValid(task.priority):
-        return "ERROR: priority field must match one of the following: 'high', 'medium', or 'low'"
-
-    if not statusIsValid(task.status):
-        return "ERROR: status field must match one of the following: 'complete', 'in progress', or 'not started'"
+@router.post("/update")
+def update_task(user_id: int, task_id: int, task: Task, priority: PriorityEnum = None, status: StatusEnum = None):
 
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text(
@@ -120,31 +103,31 @@ def update_task(task_id: int, task: Task):
             WHERE task_id = :task_id AND user_id = :user_id
             RETURNING *
             """
-        ), [{"task_id": task_id, "user_id": user.login_id, "name": task.name, 
-             "description": task.description, "priority": task.priority, "status": task.status, 
+        ), [{"task_id": task_id, "user_id": user_id, "name": task.name, 
+             "description": task.description, "priority": priority, "status": status, 
              "start_date": task.start_date, "due_date": task.due_date, "end_date": task.end_date,
              "estimated_time": task.estimated_time}])
         
         if result.rowcount > 0:
             return "OK: Task successfully updated"
 
-    return "ERROR: Task not found"
+    raise HTTPException(status_code=404, detail="Task not found")
 
 
-@router.post("/delete/{task_id}")
-def delete_task(task_id: int):
-
-    if user.login_id < 0:
-        return "ERROR: Invalid login ID"
+@router.post("/delete")
+def delete_task(user_id: int, task_id: int):
 
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text(
-            """
-            DELETE FROM tasks
-            WHERE task_id = :task_id AND user_id = :user_id
-            RETURNING *
-            """
-        ), [{"task_id": task_id, "user_id": user.login_id}])
+        # Delete the task
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                DELETE FROM tasks
+                WHERE task_id = :task_id AND user_id = :user_id
+                RETURNING task_id
+                """
+            ), [{"task_id": task_id, "user_id": user_id}]
+        )
 
         # check if a task was deleted
         if result.rowcount > 0:
@@ -156,6 +139,6 @@ def delete_task(task_id: int):
                 """
             ), {"task_id": task_id})
 
-            return {"message": "OK: Task and associated tags successfully deleted"}
+            return "OK: Task and associated tags successfully deleted"
     
-    return "ERROR: Task not found"
+    raise HTTPException(status_code=404, detail="Task not found")

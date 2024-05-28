@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import Optional
 from src.api import auth
 from src import database as db
-import src.api.user as user
 
 router = APIRouter(
     prefix="/analytics",
@@ -14,12 +13,10 @@ router = APIRouter(
 
 @router.get("")
 def analytics(
+    user_id: int, 
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
 ):
-    # Validate user
-    if user.login_id < 0:
-        raise HTTPException(status_code=400, detail="Invalid login ID")
 
     with db.engine.begin() as connection:
         metadata = MetaData()
@@ -28,7 +25,7 @@ def analytics(
 
         # Query definition for the total # of tasks created
         total_tasks_query = select(func.count()).where(
-            tasks_table.c.user_id == user.login_id
+            tasks_table.c.user_id == user_id
         )
         if start_date:
             total_tasks_query = total_tasks_query.where(tasks_table.c.start_date >= start_date)
@@ -39,7 +36,7 @@ def analytics(
 
         # Query for average completion time (in hours)
         avg_completion_time_query = select(func.avg(func.extract('epoch', tasks_table.c.end_date - tasks_table.c.start_date))).where(
-            tasks_table.c.user_id == user.login_id,
+            tasks_table.c.user_id == user_id,
             tasks_table.c.end_date.isnot(None)
         )
         if start_date:
@@ -54,7 +51,7 @@ def analytics(
 
         # Overdue tasks (if applicable to the user / timeframe)
         overdue_tasks_query = select(func.count()).where(
-            tasks_table.c.user_id == user.login_id,
+            tasks_table.c.user_id == user_id,
             tasks_table.c.due_date < func.now(),
             tasks_table.c.end_date.is_(None)
         )

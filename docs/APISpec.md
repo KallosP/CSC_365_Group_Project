@@ -7,8 +7,18 @@
 Create a new task.
 
 **Request**:
+
 ```json
 {
+<<<<<<< HEAD
+  "name": "string",
+  "description": "string" /* optional */,
+  "priority": "string" /* optional, "high", "medium", or "low" */,
+  "status": "string" /* optional, "complete", "not started", "in progress" */,
+  "start_date": "timestamp" /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */,
+  "due_date": "timestamp" /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */,
+  "end_date": "timestamp" /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+=======
     "name": "string",
     "description": "string",   /* optional */
     "priority": "string",      /* optional, "high", "medium", or "low" */
@@ -17,13 +27,15 @@ Create a new task.
     "due_date": "timestamp",   /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
     "end_date": "timestamp",   /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
     "estimated_time": "number" /* optional, estimated time to complete task (in hours) */
+>>>>>>> main
 }
 ```
 
 **Response**:
+
 ```json
 {
-    "task_id": "int"
+  "task_id": "int"
 }
 ```
 
@@ -32,47 +44,51 @@ Create a new task.
 Gets the informaiton associated with an existing task.
 
 **Request**:
+
 ```json
 {
-    "task_id": "int"
+  "task_id": "int"
 }
 ```
 
 **Response**:
+
 ```json
 {
-    "name": "string",
-    "description": "string",
-    "priority": "string",      /* "high", "medium", or "low" */
-    "status": "string",        /* "complete", "not started", "in progress" */
-    "start_date": "timestamp", /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
-    "due_date": "timestamp",   /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
-    "end_date": "timestamp"    /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
+  "name": "string",
+  "description": "string",
+  "priority": "string" /* "high", "medium", or "low" */,
+  "status": "string" /* "complete", "not started", "in progress" */,
+  "start_date": "timestamp" /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */,
+  "due_date": "timestamp" /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */,
+  "end_date": "timestamp" /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
 }
 ```
 
-### 1.3. Update Task - `/crud/update/{task_id}` (POST)
+### 1.3. Update Task - `/crud/update/{task_id}` (PATCH)
 
 Update an existing task.
 
 **Request**:
+
 ```json
 {
-    "task_id": "int",
-    "name": "string",          /* optional */
-    "description": "string",   /* optional */
-    "priority": "string",      /* optional, "high", "medium", or "low" */
-    "status": "string",        /* optional, "complete", "not started", "in progress" */
-    "start_date": "timestamp", /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
-    "due_date": "timestamp",   /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
-    "end_date": "timestamp"    /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+  "task_id": "int",
+  "name": "string" /* optional */,
+  "description": "string" /* optional */,
+  "priority": "string" /* optional, "high", "medium", or "low" */,
+  "status": "string" /* optional, "complete", "not started", "in progress" */,
+  "start_date": "timestamp" /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */,
+  "due_date": "timestamp" /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */,
+  "end_date": "timestamp" /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
 }
 ```
 
 **Response**:
+
 ```json
 {
-  "OK"
+  "OK: Task successfully updated"
 }
 ```
 
@@ -81,16 +97,18 @@ Update an existing task.
 Delete an existing task (and its tags.)
 
 **Request**:
+
 ```json
 {
-    "task_id": "int"
+  "task_id": "int"
 }
 ```
 
 **Response**:
+
 ```json
 {
-    "OK"
+    "OK: Task and associated tags successfully deleted"
 }
 ```
 
@@ -101,6 +119,7 @@ Delete an existing task (and its tags.)
 Return a summary of all tasks that have been created.
 
 **Response**:
+
 ```json
 {
   "number_of_tasks": "number",
@@ -117,6 +136,7 @@ Return a summary of all tasks that have been created.
 Return a list of all tags associated with the task.
 
 **Response**:
+
 ```json
 {
   "tags": ["string", "string", ...]
@@ -128,6 +148,7 @@ Return a list of all tags associated with the task.
 Adds tags to a task.
 
 **Request**:
+
 ```json
 {
   "tags": ["string", "string", ...]
@@ -135,9 +156,10 @@ Adds tags to a task.
 ```
 
 **Response**:
+
 ```json
 {
-  "OK"
+  "OK: Tag added successfully"
 }
 ```
 
@@ -146,6 +168,7 @@ Adds tags to a task.
 Removes tags from a task
 
 **Request**:
+
 ```json
 {
   "tags": ["string", "string", ...]
@@ -153,9 +176,10 @@ Removes tags from a task
 ```
 
 **Response**:
+
 ```json
 {
-  "OK"
+  "OK: Tag successfully removed"
 }
 ```
 
@@ -163,18 +187,21 @@ Removes tags from a task
 
 ### 4.1 Sort Tasks by Field - `/sort` (GET)
 
-Sort tasks by provided field (excluding description)  
+Sort tasks by provided field (excluding description)
 
 **Request**:
+
 ```
 GET /sort?sort_col=string&sort_order=string
 ```
 
- **Response**:
+**Response**:
+
 ```json
 [
 
     {
+    "task_id": "int",
     "name": "string",
     "description": "string",
     "priority": "string",      /* "high", "medium", or "low" */
@@ -182,12 +209,11 @@ GET /sort?sort_col=string&sort_order=string
     "start_date": "timestamp", /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
     "due_date": "timestamp",   /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
     "end_date": "timestamp"    /* iso 8601 format (yyyy-mm-ddthh:mm:ssz) */
-
     },
     {
         ...
     }
-] 
+]
 ```
 
 ### 4.2 Sort Tasks by Tag - `/sort/tags` (GET)
@@ -195,11 +221,13 @@ GET /sort?sort_col=string&sort_order=string
 Displays all tasks with given tags first
 
 **Request**:
+
 ```
 GET /sort/tags?tag=string
 ```
 
 **Response**:
+
 ```json
 [
 
@@ -216,52 +244,70 @@ GET /sort/tags?tag=string
     {
         ...
     }
-] 
+]
 ```
 
 ## 5. User Account
+
 ### 5.1 Account Creation - `/user/create` (POST)
 
 Creating an account also logs the user in.
 
 **Request**:
+
 ```json
 {
   "user_name": "string",
   "password": "string"
 }
 ```
+
 **Response**:
+
 ```json
 {
-  "OK"
+  "user_id": "int"
 }
 ```
+
 ### 5.2 Login - `user/login` (POST)
+
 **Request**:
+
 ```json
 {
   "user_name": "string",
   "password": "string"
 }
 ```
+
 **Response**:
+
 ```json
 {
-  "OK"
+  "OK: Successfully logged in"
 }
 ```
 
 ## 6. Scheduler
+
 ### 6.1 Suggest - `/scheduler/suggest/{user_id}` (GET)
+<<<<<<< HEAD
+
+Suggests the order in which all the user's tasks should be done. Based on tasks' due date, priority, and user availability.
+=======
 Suggests the order in which all the user's tasks should be completed. Based on tasks' due date, priority, and user availability.
+>>>>>>> main
 **Request**:
+
 ```json
 {
-  "user_id": "number",
+  "user_id": "number"
 }
 ```
- **Response**:
+
+**Response**:
+
 ```json
 {
   "Suggested completion order": [
@@ -281,12 +327,19 @@ Suggests the order in which all the user's tasks should be completed. Based on t
     {
       ...
     }
+<<<<<<< HEAD
+]
+=======
   ]
 } 
+>>>>>>> main
 ```
+
 ### 6.2 Availability - `/scheduler/set_free_time/{user_id}` (POST)
+
 Records time ranges that tasks can be worked on.
 **Request**:
+
 ```json
 {
   "free_time": [
@@ -298,7 +351,9 @@ Records time ranges that tasks can be worked on.
   ]
 }
 ```
+
 **Response**:
+
 ```json
 "Successfully stored free time"
 ```
