@@ -23,7 +23,7 @@ class PriorityEnum(str, Enum):
     high = "high"
 
 class Task(BaseModel):
-    # NOTE: All fields are optional to allow flexibility in update_task
+    # NOTE: All attributes are optional to allow flexibility in update_task
     
     name: str = None
     description: str = None
@@ -35,7 +35,13 @@ class Task(BaseModel):
 
 @router.post("/create")
 def create_task(user_id: int, task: Task, priority: PriorityEnum = PriorityEnum.low, status: StatusEnum = StatusEnum.not_started):
-    
+    """
+    Creates new task in tasks table. 
+    All attributes are optional except task name
+
+    Returns task id into tasks table
+    """
+
     with db.engine.begin() as connection:
 
         # Ensure task has a name
@@ -55,8 +61,13 @@ def create_task(user_id: int, task: Task, priority: PriorityEnum = PriorityEnum.
     
     return {"task_id": task_id}
 
-@router.post("/read")
+@router.get("/read")
 def read_task(user_id: int, task_id: int):
+    """
+    Reads corresponding task attributes for matching user_id and task_id
+
+    Returns dictionary of attributes for task
+    """
 
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text(
@@ -68,10 +79,9 @@ def read_task(user_id: int, task_id: int):
         ), [{"task_id": task_id, "user_id": user_id}])
 
         # check if task id in table
-        task = {}
         if result.rowcount > 0:
             row = result.one()
-            task = {
+            return {
                 "name": row.name,
                 "description": row.description,
                 "priority": row.priority,
@@ -81,12 +91,17 @@ def read_task(user_id: int, task_id: int):
                 "end_date": row.end_date,
                 "estimated_time": row.estimated_time
             }
+        
+    raise HTTPException(status_code=404, detail="Task not found for user")
 
-    return task
 
-
-@router.post("/update")
+@router.put("/update")
 def update_task(user_id: int, task_id: int, task: Task, priority: PriorityEnum = None, status: StatusEnum = None):
+    """
+    Updates non-null task attributes for a matching user_id and task_id
+
+    Returns HTTP status
+    """
 
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text(
@@ -111,11 +126,16 @@ def update_task(user_id: int, task_id: int, task: Task, priority: PriorityEnum =
         if result.rowcount > 0:
             return "OK: Task successfully updated"
 
-    raise HTTPException(status_code=404, detail="Task not found")
+    raise HTTPException(status_code=404, detail="Task not found for user")
 
 
-@router.post("/delete")
+@router.delete("/delete")
 def delete_task(user_id: int, task_id: int):
+    """
+    Removes a task and all tags associated with task for a matching user_id and task_id
+
+    Returns HTTP status
+    """
 
     with db.engine.begin() as connection:
         # Delete the task
@@ -141,4 +161,4 @@ def delete_task(user_id: int, task_id: int):
 
             return "OK: Task and associated tags successfully deleted"
     
-    raise HTTPException(status_code=404, detail="Task not found")
+    raise HTTPException(status_code=404, detail="Task not found for user")

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import Table, MetaData, func, select
+from sqlalchemy import func, select
+from src.database import metadata
 from datetime import datetime
 from typing import Optional
 from src.api import auth
@@ -19,7 +20,6 @@ def analytics(
 ):
 
     with db.engine.begin() as connection:
-        metadata = MetaData()
         metadata.reflect(bind=connection)
         tasks_table = metadata.tables['tasks']
 

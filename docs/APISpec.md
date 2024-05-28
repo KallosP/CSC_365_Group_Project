@@ -10,15 +10,7 @@ Create a new task.
 
 ```json
 {
-<<<<<<< HEAD
-  "name": "string",
-  "description": "string" /* optional */,
-  "priority": "string" /* optional, "high", "medium", or "low" */,
-  "status": "string" /* optional, "complete", "not started", "in progress" */,
-  "start_date": "timestamp" /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */,
-  "due_date": "timestamp" /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */,
-  "end_date": "timestamp" /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
-=======
+    "user_id": "int",
     "name": "string",
     "description": "string",   /* optional */
     "priority": "string",      /* optional, "high", "medium", or "low" */
@@ -27,7 +19,6 @@ Create a new task.
     "due_date": "timestamp",   /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
     "end_date": "timestamp",   /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
     "estimated_time": "number" /* optional, estimated time to complete task (in hours) */
->>>>>>> main
 }
 ```
 
@@ -39,16 +30,14 @@ Create a new task.
 }
 ```
 
-### 1.2. Read Task - `/crud/read/{task_id}` (GET)
+### 1.2. Read Task - `/crud/read` (GET)
 
 Gets the informaiton associated with an existing task.
 
 **Request**:
 
-```json
-{
-  "task_id": "int"
-}
+```
+GET /tags/get?user_id=int&task_id=int
 ```
 
 **Response**:
@@ -65,7 +54,7 @@ Gets the informaiton associated with an existing task.
 }
 ```
 
-### 1.3. Update Task - `/crud/update/{task_id}` (PATCH)
+### 1.3. Update Task - `/crud/update/{task_id}` (PUT)
 
 Update an existing task.
 
@@ -73,6 +62,7 @@ Update an existing task.
 
 ```json
 {
+  "user_id": "int",
   "task_id": "int",
   "name": "string" /* optional */,
   "description": "string" /* optional */,
@@ -100,6 +90,7 @@ Delete an existing task (and its tags.)
 
 ```json
 {
+  "user_id": "int",
   "task_id": "int"
 }
 ```
@@ -118,6 +109,12 @@ Delete an existing task (and its tags.)
 
 Return a summary of all tasks that have been created.
 
+**Request**:
+
+```
+GET /summary/get?user_id=int
+```
+
 **Response**:
 
 ```json
@@ -131,9 +128,15 @@ Return a summary of all tasks that have been created.
 
 ## 3. Tag Modification
 
-### 3.1 Get Tags - `/tags/{task_id}` (GET)
+### 3.1 Get Tags - `/tags/get` (GET)
 
 Return a list of all tags associated with the task.
+
+**Request**:
+
+```
+GET /tags/get?user_id=int&task_id=int
+```
 
 **Response**:
 
@@ -143,7 +146,7 @@ Return a list of all tags associated with the task.
 }
 ```
 
-### 3.2 Adding Tags - `/tags/add/{task_id}` (POST)
+### 3.2 Adding Tags - `/tags/add` (POST)
 
 Adds tags to a task.
 
@@ -151,6 +154,8 @@ Adds tags to a task.
 
 ```json
 {
+  "user_id": "int",
+  "task_id": "int",
   "tags": ["string", "string", ...]
 }
 ```
@@ -163,7 +168,7 @@ Adds tags to a task.
 }
 ```
 
-### 3.3 Removing Tags - `/tags/remove/{task_id}` (POST)
+### 3.3 Removing Tags - `/tags/remove` (DELETE)
 
 Removes tags from a task
 
@@ -171,6 +176,8 @@ Removes tags from a task
 
 ```json
 {
+  "user_id": "int",
+  "task_id": "int",
   "tags": ["string", "string", ...]
 }
 ```
@@ -192,7 +199,7 @@ Sort tasks by provided field (excluding description)
 **Request**:
 
 ```
-GET /sort?sort_col=string&sort_order=string
+GET /sort?user_id=int&sort_col=string&sort_order=string
 ```
 
 **Response**:
@@ -223,7 +230,7 @@ Displays all tasks with given tags first
 **Request**:
 
 ```
-GET /sort/tags?tag=string
+GET /sort/tags?user_id=int&tag=string
 ```
 
 **Response**:
@@ -270,7 +277,7 @@ Creating an account also logs the user in.
 }
 ```
 
-### 5.2 Login - `user/login` (POST)
+### 5.2 Login - `user/get_user_id` (POST)
 
 **Request**:
 
@@ -292,12 +299,9 @@ Creating an account also logs the user in.
 ## 6. Scheduler
 
 ### 6.1 Suggest - `/scheduler/suggest/{user_id}` (GET)
-<<<<<<< HEAD
 
-Suggests the order in which all the user's tasks should be done. Based on tasks' due date, priority, and user availability.
-=======
 Suggests the order in which all the user's tasks should be completed. Based on tasks' due date, priority, and user availability.
->>>>>>> main
+
 **Request**:
 
 ```json
@@ -327,12 +331,9 @@ Suggests the order in which all the user's tasks should be completed. Based on t
     {
       ...
     }
-<<<<<<< HEAD
-]
-=======
   ]
 } 
->>>>>>> main
+
 ```
 
 ### 6.2 Availability - `/scheduler/set_free_time/{user_id}` (POST)

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from src.api import auth
 from src import database as db
+from src.database import tasks_table as tasks, tags_table
 import sqlalchemy
-from sqlalchemy import Table, MetaData
 from enum import Enum
 
 router = APIRouter(
@@ -23,19 +23,18 @@ class sort_order(str, Enum):
     asc = "asc"
     desc = "desc"   
 
-engine = db.engine
-metadata = MetaData()
-
-tasks = Table('tasks', metadata, autoload_with=engine)
-
 @router.get("/")
 def sort(user_id: int,
          sort_col: sort_options = sort_options.due_date,
          sort_order: sort_order = sort_order.desc):
     """
+    Retrieves all tasks associated with user, sorted by a column and order
+
     sort_col = which columns to sort by
     sort_order = direction of sort
     Default = sort by due_date in descending order
+
+    Returns list of tasks
     """
 
     # TODO: change sorting of priority and status from being alphabetic 
@@ -98,10 +97,14 @@ def sort(user_id: int,
 
     return tasks_list 
 
-tags_table = Table('tags', metadata, autoload_with=engine)
-
 @router.get("/tags")
 def sort_by_tags(user_id: int, tag: str):
+    """
+    Retrieves all tasks associated with user.
+    Tasks containing tag input are appended first
+
+    Returns list of tasks
+    """
 
     # Logic: Query all tasks that have the given tag, append them first
     #        to the json object. Then append the rest of the tasks that

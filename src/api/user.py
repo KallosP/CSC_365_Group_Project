@@ -16,8 +16,12 @@ class User(BaseModel):
 
 @router.post("/create")
 def create_user(user: User):
+    """
+    Add to username and password to user table.
+    If a user already exists nothing is inserted
 
-    # NOTE: If a user already exists nothing is inserted
+    Returns user id into users table
+    """
 
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text(
@@ -39,6 +43,11 @@ def create_user(user: User):
 
 @router.post("/get_user_id")
 def get_user_id(user: User):
+    """
+    Matches username and password to id in users table
+
+    Returns user id into users table
+    """
 
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text(

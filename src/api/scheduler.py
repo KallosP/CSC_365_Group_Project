@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from src.api import auth
 from src import database as db
 import sqlalchemy
-from sqlalchemy import Table, MetaData
+from src.database import tasks_table as tasks, users_table as users, tags_table
 from pydantic import BaseModel, validator, Field
 from typing import List, Tuple
 from datetime import time, datetime
@@ -14,10 +14,6 @@ router = APIRouter(
     dependencies=[Depends(auth.get_api_key)],
 )
 
-engine = db.engine
-metadata = MetaData()
-
-tasks = Table('tasks', metadata, autoload_with=db.engine)
 @router.get("/suggest")
 def suggest(user_id: int):
 
@@ -183,8 +179,6 @@ class FreeTime(BaseModel):
         if start_time >= end_time:
             raise ValueError('Invalid time range. Start time must be before end time.')
         return v
-
-users = Table('users', metadata, autoload_with=db.engine)
 
 @router.post("/set_free_time/{user_id}")
 def suggest(user_id: int, free_time: FreeTime):

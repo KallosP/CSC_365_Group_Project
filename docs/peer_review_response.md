@@ -55,6 +55,19 @@
 
 ### (Sri Bala)
 
+1. The login check ensures the endpoints can't be used to see other users' tasks. This has since been replaced by a passed in user id instead.
+2. Function docstrings added for description and return types
+3. Password hashing is not implemented because real user security and authentication is out of the scope of this project
+4. login_id global is removed, user_id now passed between endpoints
+5. Logout unnecessary because user_id is now passed between endpoints
+6. Summary query uses subquery joins because when no tasks have been created with a certain status, the query result needs additional python logic to fill in status counts
+7. Exceptions implemented if task not found
+8. Implemented deletion of tags on task deletion
+9. Parameter bindings currently used in queries
+10. Chose to view all tasks in sort endpoints for visibility on created tasks
+11. Tags is its own class because it is easier to enter on render when it's parsed as a json dictionary
+12. Users are given a default timestamp to fill in so a validity check seems unnecessary, and users will see if an error occurs with their request
+
 ## Schema/API Design Comments
 
 ### (Sophia Chang)
@@ -105,6 +118,22 @@
 12. User Name now cannot be an empty string. Priority is now set by default to low.
 13. get tags now is GET instead of POST
 
+### (Sri Bala)
+
+1. /tags/{task_id} endpoint post has been changed to get
+2. /{task_id}/remove endpoint changed to delete
+3. crud renamed to task
+4. /read/{task_id} endpoint changed to get. It can be called to check that all entered fields were successfully written in the post request
+5. Changed update_task to put request
+6. Due date is different from end date to check if tasks were completed past due
+7. The overdue status is being worked on in analytics
+8. It wouldn't make sense to have a null username or password because that's not considered a user. And this is not possible when passing the arguments on render due to them being non nullable strings
+9. It could be a good idea to have more user information, but it doesn't add to the purpose of a task manager
+10. That is a good constraint to have, but it's not necessary since the create_user endpoint already avoids inserting duplicate usernames
+11. If the database was large enough, I would agree that indexes on those ids are useful. However performance is not a problem at this scale
+12. Collaborators does sound like a good feature to have when teams are using the tool. This may be implemented in the future
+13. Time estimate has since been added
+
 ## Test Results
 
 ### (Sophia Chang)
@@ -120,6 +149,8 @@ All tests work as intended/no errors found.
 All tests work as intended/no errors found. (More detailed responses have been added since tests were ran)
 
 ### (Sri Bala)
+
+All tests work as intended. Checking that all input tags were deleted is not implemented as this would split the query and increase the complexity of the endpoint as well as the error message for the user.
 
 ## Product Ideas
 
@@ -140,3 +171,6 @@ All tests work as intended/no errors found. (More detailed responses have been a
 3. Sharing tasks does seem like a good idea to implement as it has many practical use cases
 
 ### (Sri Bala)
+
+1. Attaching documents to tasks is useful but very complex to store data for each file format and is out of the scope of this project.
+2. Analytics is a good idea since we already have many task attributes and the endpoint would allow us to report different statistics. This is being implmented.

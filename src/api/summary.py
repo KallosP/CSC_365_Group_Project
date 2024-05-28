@@ -9,12 +9,17 @@ router = APIRouter(
     dependencies=[Depends(auth.get_api_key)],
 )
 
-@router.post("")
+@router.get("/")
 def summary(user_id: int):
-    
+    """
+    Retrieves count of tasks for user grouped by status
+
+    Returns dictionary of task counts grouped by status
+    """
+
     # Fetch summary info from db
     with db.engine.begin() as connection:
-        # there is probably a better way to do this
+
         result = connection.execute(sqlalchemy.text(
             """
             WITH status_counts AS (

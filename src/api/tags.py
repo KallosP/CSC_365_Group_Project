@@ -15,6 +15,11 @@ class Tag(BaseModel):
 
 @router.post("/add")
 def add_tag(user_id: int, task_id: int, tag: Tag):
+    """
+    Adds a tag to task associated with user_id and task_id
+
+    Returns HTTP status
+    """
     
     with db.engine.begin() as connection:
         # Check if task_id exists
@@ -27,7 +32,7 @@ def add_tag(user_id: int, task_id: int, tag: Tag):
             ), [{"task_id": task_id, "user_id": user_id}]).fetchone()
 
         if exists is None:
-            raise HTTPException(status_code=404, detail="task_id not found")
+            raise HTTPException(status_code=404, detail="Task not found for user")
         
         # Check if we already have a tag of the same name for a given task
         tag_exists = connection.execute(sqlalchemy.text(
@@ -51,8 +56,13 @@ def add_tag(user_id: int, task_id: int, tag: Tag):
     
     return "OK"
 
-@router.post("/get")
+@router.get("/get")
 def get_tags(user_id: int, task_id: int):
+    """
+    Retrieves all tags associated with task
+
+    Returns list of tags
+    """
 
     with db.engine.begin() as connection:
 
@@ -66,7 +76,7 @@ def get_tags(user_id: int, task_id: int):
             ), [{"task_id": task_id, "user_id": user_id}]).fetchone()
         
         if exists is None:
-            raise HTTPException(status_code=404, detail="task_id not found")
+            raise HTTPException(status_code=404, detail="Task not found for user")
         
         tags = connection.execute(sqlalchemy.text(
             """
@@ -87,8 +97,13 @@ class Tags(BaseModel):
     names: list[str] = None
 
 
-@router.post("/remove")
+@router.delete("/remove")
 def remove_tag(user_id: int, task_id: int, tags: Tags):
+    """
+    Removes matching tags from task contained in tags argument
+
+    Returns HTTP status
+    """
 
     with db.engine.begin() as connection:
 
@@ -102,7 +117,7 @@ def remove_tag(user_id: int, task_id: int, tags: Tags):
             ), [{"task_id": task_id, "user_id": user_id}]).fetchone()
 
         if exists is None:
-            raise HTTPException(status_code=404, detail="task_id not found")
+            raise HTTPException(status_code=404, detail="Task not found for user")
         
         deleted = connection.execute(sqlalchemy.text(
             """
