@@ -1,4 +1,4 @@
-# Case 1: Concurrent User Availability Updates (Lost Updates)
+# Case 1: Concurrent User Availability Updates (Lost Update)
 **Scenario:** A user updates their free time/availability using `/scheduler/set_free_time/{user_id}` in two different sessions at the same time.
 ```mermaid
 sequenceDiagram
