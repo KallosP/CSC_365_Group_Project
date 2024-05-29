@@ -17,6 +17,7 @@ sequenceDiagram
     Note over S1, S2: Final state in database for free time is [13:00, 15:00], losing S1's update    
 ```
 **Solution:** Use pessimistic locking, specifically explicit locking via `FOR UPDATE`, to prevent other sessions from updating free time while the current session is in the middle of updating the `users` table. This approach is appropriate since explicit locking is usually used to ensure exclusive access to records to prevent conflicting updates from other transactions, which is this exact issue.
+
 # Case 2: Concurrent Tag Addition (Race Condition Causing Duplicate Insertion)
 **Scenario:** A user updates tags to a task using `/tags/add` in two different sessions at the same time.
 ```mermaid
@@ -41,6 +42,17 @@ sequenceDiagram
 ```
 **Solution:** A `FOR_UPDATE` could again be used in this example in order to prevent other sessions from updating the tags table, causing the race condition described above.
 
+# Case 3: Concurrent Task Update (Lost Update)
+**Scenario:** User reads a due_date from a task and increments the due_date by 1 day, at the same time as another user is updating the due date.
+```mermaid
+sequenceDiagram
+    participant S1
+    participant DB
+    participant S2
 
-
-# Case 3
+    S1->>DB: S1 reads due_date for task_id 1
+    S2->>DB: S2 updates the due date for task_id 1 and sets it to today
+    S1->>DB: S1 increments the due date it read and updates it for task_id 1
+    S2->>DB: S2 reads task_id 1 and sees the due date is not set to today
+```
+**Solution:** Avoid using multiple transactions for updating tasks based on existing values. In this example, the initial read by S1 can be executed in the update query by incrementing the due_date in the SQL statement.
