@@ -358,3 +358,40 @@ Records time ranges that tasks can be worked on.
 ```json
 "Successfully stored free time"
 ```
+
+## 7. Analytics
+
+### 7.1 Get Analytics - `/analytics` (GET)
+
+Gives user analytics.
+
+**Request**:
+
+```json
+{
+  "user_id": "int",
+  "start_date": "timestamp", /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+  "end_date": "timestamp", /* optional, ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) */
+}
+```
+
+**Response**:
+
+```json
+{
+  "total_tasks": "number",
+  "avg_completion_time_hours": "number",
+  "overdue_tasks": "number",
+  "task_status_breakdown": {
+    "complete": "number",
+    "in progress": "number",
+    "not started": "number"
+  },
+  "priority_distribution": {
+    "high": "number",
+    "hedium": "number",
+    "low": "number"
+  }
+}
+
+```
