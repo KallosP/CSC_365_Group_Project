@@ -43,7 +43,7 @@ sequenceDiagram
 **Solution:** A `FOR_UPDATE` could again be used in this example in order to prevent other sessions from updating the tags table, causing the race condition described above.
 
 # Case 3: Concurrent Task Update (Lost Update)
-**Scenario:** User reads a due_date from a task and increments the due_date by 1 day, at the same time as another user is updating the due date.
+**Scenario:** A user reads the due_date from a task with `/task/read` and increments the due_date by 1 day with `/task/update`. At the same time, another user calls `/task/update` with a different due date.
 ```mermaid
 sequenceDiagram
     participant S1
@@ -55,4 +55,4 @@ sequenceDiagram
     S1->>DB: S1 increments the due date it read and updates it for task_id 1
     S2->>DB: S2 reads task_id 1 and sees the due date is not set to today
 ```
-**Solution:** Avoid using multiple transactions for updating tasks based on existing values. In this example, the initial read by S1 can be executed in the update query by incrementing the due_date in the SQL statement.
+**Solution:** Avoid using multiple transactions for updating tasks based on existing values. In this example, the initial read by S1 can be executed in the update query by incrementing the due_date in the SQL statement. Alternatively, locking can be used for the row with task_id 1.
