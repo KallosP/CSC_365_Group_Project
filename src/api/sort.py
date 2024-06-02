@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from src.api import auth
 from src import database as db
 from src.database import tasks_table as tasks, tags_table
+from src.api.task import PriorityEnum, StatusEnum
 import sqlalchemy
 from enum import Enum
 
@@ -10,6 +11,20 @@ router = APIRouter(
     tags=["sort"],
     dependencies=[Depends(auth.get_api_key)],
 )
+
+PRIORITY_ORDER = {
+    PriorityEnum.high: 3,
+    PriorityEnum.medium: 2,
+    PriorityEnum.low: 1,
+    None: 0
+}
+
+STATUS_ORDER = {
+    StatusEnum.not_started: 3,
+    StatusEnum.in_progress: 2,
+    StatusEnum.complete: 1,
+    None: 0
+}
 
 class sort_options(str, Enum):
     name = "name"
@@ -37,14 +52,13 @@ def sort(user_id: int,
     Returns list of tasks
     """
 
-    # TODO: change sorting of priority and status from being alphabetic 
-
     if sort_col is sort_options.name:
         order_by_col = tasks.c.name
     elif sort_col is sort_options.priority:
-        order_by_col = tasks.c.priority
+        # * unpacks list of tuples and passes them to case
+        order_by_col = sqlalchemy.case(*[(tasks.c.priority == key, value) for key, value in PRIORITY_ORDER.items()])
     elif sort_col is sort_options.status:
-        order_by_col = tasks.c.status
+        order_by_col = sqlalchemy.case(*[(tasks.c.status == key, value) for key, value in STATUS_ORDER.items()])
     elif sort_col is sort_options.start_date:
         order_by_col = tasks.c.start_date
     elif sort_col is sort_options.due_date:
