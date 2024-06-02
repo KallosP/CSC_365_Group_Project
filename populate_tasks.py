@@ -6,8 +6,7 @@ import numpy as np
 import random
 import pytz
 from enum import Enum
-from datetime import time, datetime
-from typing import Tuple
+from datetime import time
 
 def database_connection_url():
     dotenv.load_dotenv()
@@ -92,7 +91,7 @@ with engine.begin() as conn:
     """))
     
 # Creates ~1 mil rows in total
-num_users = 30000
+num_users = 10
 fake = Faker()
 tasks_sample_distribution = np.random.default_rng().negative_binomial(0.04, 0.01, num_users)
 total_tasks = 0
