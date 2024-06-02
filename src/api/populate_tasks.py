@@ -5,6 +5,9 @@ from faker import Faker
 import numpy as np
 import random
 import pytz
+from enum import Enum
+from datetime import time, datetime
+from typing import Tuple
 
 def database_connection_url():
     dotenv.load_dotenv()
@@ -14,6 +17,16 @@ def database_connection_url():
     DB_PORT: str = os.environ.get("POSTGRES_PORT")
     DB_NAME: str = os.environ.get("POSTGRES_DB")
     return f"postgresql://{DB_USER}:{DB_PASSWD}@{DB_SERVER}:{DB_PORT}/{DB_NAME}"
+
+class StatusEnum(str, Enum):
+    complete = "complete"
+    in_progress = "in progress"
+    not_started = "not started"
+
+class PriorityEnum(str, Enum):
+    low = "low"
+    medium = "medium"
+    high = "high"
 
 # Create a new DB engine based on our connection string
 engine = sqlalchemy.create_engine(database_connection_url(), use_insertmanyvalues=True)
@@ -78,47 +91,93 @@ with engine.begin() as conn:
 
     """))
     
-num_users = 100
+# Creates ~1 mil rows in total
+num_users = 30000
 fake = Faker()
 tasks_sample_distribution = np.random.default_rng().negative_binomial(0.04, 0.01, num_users)
-#category_sample_distribution = np.random.choice([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-#                                                 num_users,
-#                                                p=[0.1, 0.05, 0.1, 0.3, 0.05, 0.05, 0.05, 0.05, 0.15, 0.1])
 total_tasks = 0
 
-# create fake posters with fake names and birthdays
+# Create fake users with fake tasks
 with engine.begin() as conn:
-    print("creating fake posters...")
+    print("creating fake users...")
     tasks = []
+    tags = []
+    subtasks = []
     for i in range(num_users):
         if (i % 10 == 0):
             print(i)
         
         name = fake.name()
+        password = fake.password()
+        # Generate random free times
+        free_time = []
+        # Generate 1 to 3 free time ranges
+        for _ in range(random.randint(1, 3)):  
+            start_time = time(hour=random.randint(0, 12), minute=random.randint(0, 59))
+            end_time = time(hour=random.randint(start_time.hour+1, 23), minute=random.randint(0, 59))
+            free_time.append([start_time, end_time])
 
         user_id = conn.execute(sqlalchemy.text("""
-        INSERT INTO users (user_name) VALUES (:username) RETURNING user_id;
-        """), {"username": name}).scalar_one()
+        INSERT INTO users (user_name, password, free_time)
+        VALUES (:username, :password, :free_time) 
+        RETURNING user_id;
+        """), {"username": name, "password": password, "free_time": free_time}).scalar_one()
 
         num_tasks = tasks_sample_distribution[i]
-        #likes_sample_distribution = np.random.default_rng().negative_binomial(0.8, 0.0001, num_tasks)  
         for j in range(num_tasks):
             total_tasks += 1
-            tasks.append({
+
+            task = {
                 "name": fake.bs(),
                 "description": fake.sentences(),
-                "priority": "low",
-                "status": "not started",
-                "start_date": fake.date_time_between(start_date='-5y', end_date='now', tzinfo=pytz.timezone(fake.timezone())),
-                "due_date": fake.date_time_between(start_date='-5y', end_date='now', tzinfo=pytz.timezone(fake.timezone())),
-                "end_date": fake.date_time_between(start_date='-5y', end_date='now', tzinfo=pytz.timezone(fake.timezone())),
+                "priority": random.choice(list(PriorityEnum)).value,
+                "status": random.choice(list(StatusEnum)).value,
+                "start_date": fake.date_time_between(start_date='-1y', end_date='now', tzinfo=pytz.timezone(fake.timezone())),
+                "due_date": fake.date_time_between(start_date='-1y', end_date='now', tzinfo=pytz.timezone(fake.timezone())),
+                "end_date": fake.date_time_between(start_date='-1y', end_date='now', tzinfo=pytz.timezone(fake.timezone())),
+                "user_id": user_id,
                 "estimated_time": random.randint(1, 30)
-            })
+            }
+            tasks.append(task)
 
-    if tasks:
-        conn.execute(sqlalchemy.text("""
-        INSERT INTO tasks (name, description, priority, status, start_date, due_date, end_date, estimated_time) 
-        VALUES (:name, :description, :priority, :status, :start_date, :due_date, :end_date, :estimated_time);
-        """), tasks)
+            # Add a random number of tags (1-10) to the tags table
+            for _ in range(random.randint(1, 10)):  
+                tag = {
+                    "name": fake.word(),
+                    "user_id": user_id,
+                    "task_id": total_tasks
+                }
+                tags.append(tag)
+
+            # Insert random subtasks (1-5) related to the task
+            for _ in range(random.randint(1, 5)):  
+                subtask = {
+                    "task_id": total_tasks,  
+                    "name": task["name"] + " (SUBTASK)",
+                    "priority": task["priority"],
+                    "due_date": task["due_date"],
+                    "estimated_time": task["estimated_time"],
+                    "weight": random.randint(1, 10),
+                    "user_id": user_id
+                }
+                subtasks.append(subtask)
+
+    # Bulk insert tasks into tasks table
+    conn.execute(sqlalchemy.text("""
+    INSERT INTO tasks (name, description, priority, status, start_date, due_date, end_date, user_id, estimated_time) 
+    VALUES (:name, :description, :priority, :status, :start_date, :due_date, :end_date, :user_id, :estimated_time);
+    """), tasks)
+
+    # Bulk insert tags into tags table
+    conn.execute(sqlalchemy.text("""
+    INSERT INTO tags (name, user_id, task_id)
+    VALUES (:name, :user_id, :task_id);
+    """), tags)
+
+    # Bulk insert subtasks into subtasks table
+    conn.execute(sqlalchemy.text("""
+    INSERT INTO subtasks (task_id, name, priority, due_date, estimated_time, weight, user_id)
+    VALUES (:task_id, :name, :priority, :due_date, :estimated_time, :weight, :user_id);
+    """), subtasks)
 
     print("total tasks: ", total_tasks)
