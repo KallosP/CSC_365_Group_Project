@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends 
-from src.api import auth
+from src.api import auth, user
 from src import database as db
 import sqlalchemy
 from src.database import tasks_table as tasks, users_table as users, tags_table
@@ -17,9 +17,6 @@ router = APIRouter(
 @router.get("/suggest")
 def suggest(user_id: int):
 
-    # TODO: change how id is checked based on login/account creation is changed
-    if user_id < 0:
-        "ERROR: Invalid login ID"
 
     # Logic: 
     #     - Assigns weights to priority and due_date fields. Tasks with a higher
@@ -33,6 +30,8 @@ def suggest(user_id: int):
     #       over to the next day.
 
     with db.engine.begin() as connection:
+
+        user.checkUser(user_id, connection)
 
         # Remove all subtasks from previous runs (prevent table clutter)
         connection.execute(sqlalchemy.text(
@@ -188,6 +187,9 @@ def suggest(user_id: int, free_time: FreeTime):
 
     # Update DB
     with db.engine.begin() as connection:
+
+        user.checkUser(user_id, connection)
+
         try:
             # Explicitly lock user 
             connection.execute(sqlalchemy.text(

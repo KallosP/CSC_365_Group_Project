@@ -3,7 +3,7 @@ from sqlalchemy import func, select, text
 from src.database import metadata
 from datetime import datetime
 from typing import Optional
-from src.api import auth
+from src.api import auth, user
 from src import database as db
 
 router = APIRouter(
@@ -19,6 +19,9 @@ def analytics(
     end_date: Optional[datetime] = None,
 ):
     with db.engine.begin() as connection:
+
+        user.checkUser(user_id, connection)
+
         metadata.reflect(bind=connection)
         tasks_table = metadata.tables['tasks']
 

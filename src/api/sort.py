@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from src.api import auth
+from src.api import auth, user
 from src import database as db
 from src.database import tasks_table as tasks, tags_table
 from src.api.task import PriorityEnum, StatusEnum
@@ -51,6 +51,8 @@ def sort(user_id: int,
 
     Returns list of tasks
     """
+    with db.engine.connect() as conn:
+        user.checkUser(user_id, conn)
 
     if sort_col is sort_options.name:
         order_by_col = tasks.c.name
@@ -119,6 +121,8 @@ def sort_by_tags(user_id: int, tag: str):
 
     Returns list of tasks
     """
+    with db.engine.connect() as conn:
+        user.checkUser(user_id, conn)
 
     # Logic: Query all tasks that have the given tag, append them first
     #        to the json object. Then append the rest of the tasks that

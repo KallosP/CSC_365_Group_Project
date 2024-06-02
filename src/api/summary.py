@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from src.api import auth
+from src.api import auth, user
 from src import database as db
 import sqlalchemy
 
@@ -19,6 +19,8 @@ def summary(user_id: int):
 
     # Fetch summary info from db
     with db.engine.begin() as connection:
+
+        user.checkUser(user_id, connection)
 
         result = connection.execute(sqlalchemy.text(
             """

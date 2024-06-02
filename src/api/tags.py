@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from src.api import auth
+from src.api import auth, user
 from src import database as db
 import sqlalchemy
 from pydantic import BaseModel
@@ -22,6 +22,9 @@ def add_tag(user_id: int, task_id: int, tag: Tag):
     """
     
     with db.engine.begin() as connection:
+
+        user.checkUser(user_id, connection)
+
         # Check if task_id exists and lock it
         exists = connection.execute(sqlalchemy.text(
             """
@@ -69,6 +72,8 @@ def get_tags(user_id: int, task_id: int):
 
     with db.engine.begin() as connection:
 
+        user.checkUser(user_id, connection)
+
         # Check if task_id exists
         exists = connection.execute(sqlalchemy.text(
             """
@@ -109,6 +114,8 @@ def remove_tag(user_id: int, task_id: int, tags: Tags):
     """
 
     with db.engine.begin() as connection:
+
+        user.checkUser(user_id, connection)
 
         # Check if task_id exists
         exists = connection.execute(sqlalchemy.text(

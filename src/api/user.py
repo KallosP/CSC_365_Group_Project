@@ -3,12 +3,25 @@ from src.api import auth
 from src import database as db
 import sqlalchemy
 from pydantic import BaseModel
+from sqlalchemy import Connection
 
 router = APIRouter(
     prefix="/user",
     tags=["user"],
     dependencies=[Depends(auth.get_api_key)],
 )
+def checkUser(user_id: int, connection: Connection):
+    try:
+        # Try to return one row
+        connection.execute(sqlalchemy.text(
+            """
+            SELECT user_id 
+            FROM users
+            WHERE user_id = :user_id
+            """
+        ), [{"user_id": user_id}]).one()
+    except: 
+        raise HTTPException(status_code=404, detail="Invalid user ID")
 
 class User(BaseModel):
     user_name: str

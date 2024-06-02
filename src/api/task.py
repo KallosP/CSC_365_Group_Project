@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
-from src.api import auth
+from src.api import auth, user
 from src import database as db
 import sqlalchemy
-from sqlalchemy import Connection
 from pydantic import BaseModel
 from datetime import datetime
 from enum import Enum
@@ -33,18 +32,6 @@ class Task(BaseModel):
     end_date: datetime = None
     estimated_time: int = None
 
-def checkUser(user_id: int, connection: Connection):
-    try:
-        # Try to return one row
-        connection.execute(sqlalchemy.text(
-            """
-            SELECT user_id 
-            FROM users
-            WHERE user_id = :user_id
-            """
-        ), [{"user_id": user_id}]).one()
-    except: 
-        raise HTTPException(status_code=404, detail="Invalid user ID")
 
 
 @router.post("/create")
@@ -59,7 +46,7 @@ def create_task(user_id: int, task: Task, priority: PriorityEnum = None, status:
     with db.engine.begin() as connection:
 
         # Check if user exists
-        checkUser(user_id, connection)
+        user.checkUser(user_id, connection)
 
         # Ensure task has a name
         if task.name == None or task.name == '':
@@ -88,7 +75,7 @@ def read_task(user_id: int, task_id: int):
 
     with db.engine.begin() as connection:
 
-        checkUser(user_id, connection)
+        user.checkUser(user_id, connection)
 
         result = connection.execute(sqlalchemy.text(
             """
@@ -125,7 +112,7 @@ def update_task(user_id: int, task_id: int, task: Task, priority: PriorityEnum =
 
     with db.engine.begin() as connection:
 
-        checkUser(user_id, connection)
+        user.checkUser(user_id, connection)
 
         result = connection.execute(sqlalchemy.text(
             """
@@ -162,7 +149,7 @@ def delete_task(user_id: int, task_id: int):
 
     with db.engine.begin() as connection:
 
-        checkUser(user_id, connection)
+        user.checkUser(user_id, connection)
 
         # Delete the task
         result = connection.execute(
