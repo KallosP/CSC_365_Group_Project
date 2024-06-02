@@ -34,7 +34,7 @@ class Task(BaseModel):
 
 
 @router.post("/create")
-def create_task(user_id: int, task: Task, priority: PriorityEnum = PriorityEnum.low, status: StatusEnum = StatusEnum.not_started):
+def create_task(user_id: int, task: Task, priority: PriorityEnum = None, status: StatusEnum = None):
     """
     Creates new task in tasks table. 
     All attributes are optional except task name
