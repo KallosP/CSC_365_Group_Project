@@ -91,9 +91,10 @@ with engine.begin() as conn:
     """))
     
 # Creates ~1 mil rows in total
-num_users = 10
+num_users = 10000
 fake = Faker()
-tasks_sample_distribution = np.random.default_rng().negative_binomial(0.04, 0.01, num_users)
+# Assuming every user would have anywhere from 10 to 30 tasks
+tasks_sample_distribution = np.random.default_rng().integers(10, 30, num_users)
 total_tasks = 0
 
 # Create fake users with fake tasks
@@ -111,7 +112,7 @@ with engine.begin() as conn:
         # Generate random free times
         free_time = []
         # Generate 1 to 3 free time ranges
-        for _ in range(random.randint(1, 3)):  
+        for _ in range(random.randint(1, 4)):  
             start_time = time(hour=random.randint(0, 12), minute=random.randint(0, 59))
             end_time = time(hour=random.randint(start_time.hour+1, 23), minute=random.randint(0, 59))
             free_time.append([start_time, end_time])
@@ -139,8 +140,8 @@ with engine.begin() as conn:
             }
             tasks.append(task)
 
-            # Add a random number of tags (1-10) to the tags table
-            for _ in range(random.randint(1, 10)):  
+            # Add a random number of tags (1-5) to the tags table
+            for _ in range(random.randint(1, 6)):  
                 tag = {
                     "name": fake.word(),
                     "user_id": user_id,
@@ -149,7 +150,7 @@ with engine.begin() as conn:
                 tags.append(tag)
 
             # Insert random subtasks (1-5) related to the task
-            for _ in range(random.randint(1, 5)):  
+            for _ in range(random.randint(1, 6)):  
                 subtask = {
                     "task_id": total_tasks,  
                     "name": task["name"] + " (SUBTASK)",
