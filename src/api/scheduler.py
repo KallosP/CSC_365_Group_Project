@@ -179,7 +179,7 @@ class FreeTime(BaseModel):
             raise ValueError('Invalid time range. Start time must be before end time.')
         return v
 
-@router.post("/set_free_time/{user_id}")
+@router.post("/set_free_time/")
 def suggest(user_id: int, free_time: FreeTime):
 
     # Convert tuple into a list (to make compatable with supabase column type)

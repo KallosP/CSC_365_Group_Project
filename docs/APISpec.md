@@ -298,7 +298,7 @@ Creating an account also logs the user in.
 
 ## 6. Scheduler
 
-### 6.1 Suggest - `/scheduler/suggest/{user_id}` (GET)
+### 6.1 Suggest - `/scheduler/suggest/` (GET)
 
 Suggests the order in which all the user's tasks should be completed. Based on tasks' due date, priority, and user availability.
 
@@ -336,7 +336,7 @@ Suggests the order in which all the user's tasks should be completed. Based on t
 
 ```
 
-### 6.2 Availability - `/scheduler/set_free_time/{user_id}` (POST)
+### 6.2 Availability - `/scheduler/set_free_time/` (POST)
 
 Records time ranges that tasks can be worked on.
 **Request**:
