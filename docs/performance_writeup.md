@@ -35,3 +35,12 @@ Three slowest endpoints:
 3. `/scheduler/suggest`
 
 ## Performance tuning
+1. `/task/delete`:
+...
+2. `/analytics`
+...
+3. `/scheduler/suggest`:
+### Result from `explain`
+- `Delete on subtasks  (cost=0.00..17759.60 rows=0 width=0)`: This result means the startup cost for the query was 0, but the total cost (17759.60) seems to be a bit large/the cause of the longer runtime. Adding an index to the user_id column in `subtasks` would most likely increase the speed of the query, since, the reason for the long runtime is due to the volume of records in the table.
+- Command for adding index: `create index idx_subtasks_user_id on public.subtasks (user_id);`
+- Result of `explain` after adding index was `Delete on subtasks  (cost=0.42..9.63 rows=0 width=0)`: This performance improvement was expected, the cost was drastically reduced from 17759.60 to just 9.63, increasing the peformance by around 90%.
