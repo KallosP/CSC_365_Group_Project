@@ -12,5 +12,26 @@ Final rows of data for each table:
 We believe this distribution makes sense for how our service would scale due to how task managers are normally used. More specifically, 10,000 users creating 195,313 tasks means that every user has around 20 tasks. 682,716 tags equates to around 3-4 tags per task. Our `subtasks` table is slightly different from a traditional subtask in that it splits a single task into several subtasks so they can be completed over the course of a few days. This is based on the amount of free time the user provides, specifying how long they can spend working on tasks in a single day. So, having 683,281 subtask rows reflects the average user's task having to take more than one day to complete. We believe these to be sensible ratios for regular users of our API.
 
 ## Performance results of hitting endpoints
+In ms:
+- `/user/create`:	0.01087212563
+- `/user/get_user_id`:	0.006993055344
+- `/summary/`:	0.04179143906
+- `/task/create`:	0.01151108742
+- `/task/read`:	0.006985425949
+- `/task/update`:	0.008670330048
+- `/task/delete`:	0.2015559673
+- `/sort/`:	0.03358507156
+- `/sort/tags`:	0.08682632446
+- `/tags/add`:	0.07355380058
+- `/tags/get`:	0.03960323334
+- `/tags/remove`:	0.07008337975
+- `/analytics`:	0.1734366417
+- `/scheduler/suggest`:	0.1547465324
+- `/scheduler/set_free_time`:	0.01400971413
+
+Three slowest endpoints:
+1. `/task/delete`
+2. `/analytics`
+3. `/scheduler/suggest`
 
 ## Performance tuning
