@@ -41,6 +41,9 @@ create table
     constraint subtasks_user_id_fkey foreign key (user_id) references users (user_id)
   ) tablespace pg_default;
 
+-- Add index on user_id in stubtasks
+create index idx_subtasks_user_id on public.subtasks (user_id);
+
 -- Tags
 create table
   public.tags (

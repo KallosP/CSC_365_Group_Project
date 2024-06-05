@@ -51,7 +51,7 @@ RETURNING task_id
 |         Index Cond: (task_id = 1)                                            |
 |         Filter: (user_id = 1)                                                |
 ```
-The first query performs an index scan on the task_id primary key and filters using the user_id. Since this query is already using an index, it does not need any changes.
+- The first query performs an index scan on the task_id primary key and filters using the user_id. Since this query is already using an index, it does not need any changes.
 
 Query 2:
 ```
@@ -65,9 +65,9 @@ WHERE task_id = 1
 |   ->  Seq Scan on tags  (cost=0.00..13676.99 rows=4 width=6) |
 |         Filter: (task_id = 1)                                |
 ```
-The second query performs a sequential scan over tags and filters using the task_id. This can be improved by adding an index on task_id for the tags table.
+- The second query performs a sequential scan over tags and filters using the task_id. This can be improved by adding an index on task_id for the tags table.
 
-`CREATE INDEX task_id_index on tags (task_id)`
+- Command for adding index: `CREATE INDEX task_id_index on tags (task_id)`
 
 Improved query plan:
 ```
@@ -78,6 +78,13 @@ Improved query plan:
 |         Index Cond: (task_id = 1)                                              |
 ```
 
-New execution time: 0.06053948402404785 seconds
+- New execution time: 0.06053948402404785 seconds
 
-### 1. `/analytics`
+### 2. `/analytics`
+
+
+
+### 3. `/scheduler/suggest`
+- Result from `explain` was `Delete on subtasks  (cost=0.00..17759.60 rows=0 width=0)`: This result means the startup cost for the query was 0, but the total cost (17759.60) seems to be a bit large/the cause of the longer runtime. Adding an index to the user_id column in `subtasks` would most likely increase the speed of the query, since, the reason for the long runtime is due to the volume of records in the table.
+- Command for adding index: `create index idx_subtasks_user_id on public.subtasks (user_id);`
+- Result of `explain` after adding index was `Delete on subtasks  (cost=0.42..9.63 rows=0 width=0)`: This performance improvement was expected, the cost was drastically reduced from 17759.60 to just 9.63, increasing the peformance by around 90%.
