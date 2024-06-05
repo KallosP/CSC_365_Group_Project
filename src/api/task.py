@@ -5,6 +5,7 @@ import sqlalchemy
 from pydantic import BaseModel
 from datetime import datetime
 from enum import Enum
+import time
 
 router = APIRouter(
     prefix="/task",
@@ -146,6 +147,7 @@ def delete_task(user_id: int, task_id: int):
 
     Returns HTTP status
     """
+    startTime = time.time()
 
     with db.engine.begin() as connection:
 
@@ -172,6 +174,8 @@ def delete_task(user_id: int, task_id: int):
                 """
             ), {"task_id": task_id})
 
+            endTime = time.time()
+            print(f"Total time: {endTime - startTime} seconds")
             return "OK: Task and associated tags successfully deleted"
     
     raise HTTPException(status_code=404, detail="Task not found for user")

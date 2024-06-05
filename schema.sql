@@ -37,7 +37,7 @@ create table
     weight integer null,
     user_id integer null,
     constraint subtasks_pkey primary key (subtask_id),
-    constraint subtasks_task_id_fkey foreign key (task_id) references tasks (task_id),
+    constraint subtasks_task_id_fkey foreign key (task_id) references tasks (task_id) on delete cascade,
     constraint subtasks_user_id_fkey foreign key (user_id) references users (user_id)
   ) tablespace pg_default;
 

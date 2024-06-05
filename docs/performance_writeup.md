@@ -12,7 +12,7 @@ Final rows of data for each table:
 We believe this distribution makes sense for how our service would scale due to how task managers are normally used. More specifically, 10,000 users creating 195,313 tasks means that every user has around 20 tasks. 682,716 tags equates to around 3-4 tags per task. Our `subtasks` table is slightly different from a traditional subtask in that it splits a single task into several subtasks so they can be completed over the course of a few days. This is based on the amount of free time the user provides, specifying how long they can spend working on tasks in a single day. So, having 683,281 subtask rows reflects the average user's task having to take more than one day to complete. We believe these to be sensible ratios for regular users of our API.
 
 ## Performance results of hitting endpoints
-In ms:
+In seconds:
 - `/user/create`:	0.01087212563
 - `/user/get_user_id`:	0.006993055344
 - `/summary/`:	0.04179143906
@@ -35,3 +35,49 @@ Three slowest endpoints:
 3. `/scheduler/suggest`
 
 ## Performance tuning
+### 1. `/task/delete`
+
+Query 1:
+```
+DELETE FROM tasks
+WHERE task_id = 1 AND user_id = 1
+RETURNING task_id
+```
+```
+| QUERY PLAN                                                                   |
+| ---------------------------------------------------------------------------- |
+| Delete on tasks  (cost=0.42..8.44 rows=1 width=6)                            |
+|   ->  Index Scan using tasks_pkey on tasks  (cost=0.42..8.44 rows=1 width=6) |
+|         Index Cond: (task_id = 1)                                            |
+|         Filter: (user_id = 1)                                                |
+```
+The first query performs an index scan on the task_id primary key and filters using the user_id. Since this query is already using an index, it does not need any changes.
+
+Query 2:
+```
+DELETE FROM tags
+WHERE task_id = 1
+```
+```
+| QUERY PLAN                                                   |
+| ------------------------------------------------------------ |
+| Delete on tags  (cost=0.00..13676.99 rows=0 width=0)         |
+|   ->  Seq Scan on tags  (cost=0.00..13676.99 rows=4 width=6) |
+|         Filter: (task_id = 1)                                |
+```
+The second query performs a sequential scan over tags and filters using the task_id. This can be improved by adding an index on task_id for the tags table.
+
+`CREATE INDEX task_id_index on tags (task_id)`
+
+Improved query plan:
+```
+| QUERY PLAN                                                                     |
+| ------------------------------------------------------------------------------ |
+| Delete on tags  (cost=0.42..8.50 rows=0 width=0)                               |
+|   ->  Index Scan using task_id_index on tags  (cost=0.42..8.50 rows=4 width=6) |
+|         Index Cond: (task_id = 1)                                              |
+```
+
+New execution time: 0.06053948402404785 seconds
+
+### 1. `/analytics`
