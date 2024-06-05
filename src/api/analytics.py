@@ -32,8 +32,6 @@ def analytics(
         if end_date:
             total_tasks_query = total_tasks_query.where(tasks_table.c.start_date <= end_date)
         
-        print(total_tasks_query.__str__())
-        print()
         total_tasks = connection.execute(total_tasks_query).scalar()
 
         # Query for average completion time (in hours)
@@ -47,8 +45,6 @@ def analytics(
         if end_date:
             avg_completion_time_query = avg_completion_time_query.where(tasks_table.c.end_date <= end_date)
         
-        print(avg_completion_time_query.__str__())
-        print()
         avg_completion_time_seconds = connection.execute(avg_completion_time_query).scalar()
         avg_completion_time = avg_completion_time_seconds / 3600 if avg_completion_time_seconds else 0
 
@@ -63,8 +59,6 @@ def analytics(
         if end_date:
             overdue_tasks_query = overdue_tasks_query.where(tasks_table.c.due_date <= end_date)
         
-        print(overdue_tasks_query.__str__())
-        print()
         overdue_tasks = connection.execute(overdue_tasks_query).scalar()
 
         # Task status breakdown
@@ -74,9 +68,6 @@ def analytics(
         ).where(
             tasks_table.c.user_id == user_id
         ).group_by(tasks_table.c.status)
-
-        print(task_status_query.__str__())
-        print()
         
         task_statuses_result = connection.execute(task_status_query)
         task_statuses = {row['status']: row['status_count'] for row in task_statuses_result.mappings()}
@@ -89,9 +80,6 @@ def analytics(
             tasks_table.c.user_id == user_id
         ).group_by(tasks_table.c.priority)
         
-        print(priority_distribution_query.__str__())
-        print()
-
         priority_distribution_result = connection.execute(priority_distribution_query)
         priority_distribution = {row['priority']: row['priority_count'] for row in priority_distribution_result.mappings()}
 
