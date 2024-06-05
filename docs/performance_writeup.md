@@ -37,23 +37,7 @@ Three slowest endpoints:
 ## Performance tuning
 ### 1. `/task/delete`
 
-Query 1:
-```
-DELETE FROM tasks
-WHERE task_id = 1 AND user_id = 1
-RETURNING task_id
-```
-```
-| QUERY PLAN                                                                   |
-| ---------------------------------------------------------------------------- |
-| Delete on tasks  (cost=0.42..8.44 rows=1 width=6)                            |
-|   ->  Index Scan using tasks_pkey on tasks  (cost=0.42..8.44 rows=1 width=6) |
-|         Index Cond: (task_id = 1)                                            |
-|         Filter: (user_id = 1)                                                |
-```
-- The first query performs an index scan on the task_id primary key and filters using the user_id. Since this query is already using an index, it does not need any changes.
-
-Query 2:
+The query that can be optimized with an index is the deletion of tags associated with a task ID.
 ```
 DELETE FROM tags
 WHERE task_id = 1
@@ -65,7 +49,7 @@ WHERE task_id = 1
 |   ->  Seq Scan on tags  (cost=0.00..13676.99 rows=4 width=6) |
 |         Filter: (task_id = 1)                                |
 ```
-- The second query performs a sequential scan over tags and filters using the task_id. This can be improved by adding an index on task_id for the tags table.
+- This query performs a sequential scan over tags and filters using the task_id. This can be improved by adding an index on task_id for the tags table.
 
 - Command for adding index: `CREATE INDEX task_id_index on tags (task_id)`
 
@@ -82,6 +66,35 @@ Improved query plan:
 
 ### 2. `/analytics`
 
+Most of the queries in analytics could benefit from an index on user_id in the tasks table. For example the worst performing query was:
+```
+SELECT count(*) AS count_1 
+FROM tasks 
+WHERE tasks.user_id = 1 AND tasks.due_date < now() AND tasks.end_date IS NULL
+```
+```
+| QUERY PLAN                                                                          |
+| ----------------------------------------------------------------------------------- |
+| Aggregate  (cost=8285.75..8285.76 rows=1 width=8)                                   |
+|   ->  Gather  (cost=1000.00..8285.74 rows=1 width=0)                                |
+|         Workers Planned: 2                                                          |
+|         ->  Parallel Seq Scan on tasks  (cost=0.00..7285.64 rows=1 width=0)         |
+|               Filter: ((end_date IS NULL) AND (user_id = 1) AND (due_date < now())) |
+```
+- This query counts the number of tasks for a given user that have have not ended and are past their due date. It can be improved with an index on user_id as this will greatly reduce the number of tasks that need to be searched
+- Command for adding index: `CREATE INDEX user_id_index on tasks (user_id)`
+
+Improved query plan:
+```
+| QUERY PLAN                                                                      |
+| ------------------------------------------------------------------------------- |
+| Aggregate  (cost=8.76..8.77 rows=1 width=8)                                     |
+|   ->  Index Scan using user_id_index on tasks  (cost=0.29..8.76 rows=1 width=0) |
+|         Index Cond: (user_id = 1)                                               |
+|         Filter: ((end_date IS NULL) AND (due_date < now()))                     |
+```
+
+- New execution time: 0.052351951599121094 seconds
 
 
 ### 3. `/scheduler/suggest`
